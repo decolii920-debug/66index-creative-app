@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>오늘의 64괘 — 정감록·예수제자의 길</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root{
+    /* Claude 톤: 따뜻한 베이지 + 다크 사이드 */
+    --bg: #1f1e1c;
+    --bg-soft: #2a2825;
+    --panel: #262421;
+    --panel-2: #2f2d2a;
+    --border: #3a3833;
+    --border-soft: #4a4742;
+    --text: #ece6d7;
+    --text-dim: #a8a294;
+    --muted: #837e72;
+    --accent: #d97757;       /* Claude 시그니처 오렌지 */
+    --accent-soft: #e89a7f;
+    --gold: #d4af37;
+    --jade: #6ba98b;
+    --plum: #b87ba6;
+    --sky: #7fb0d0;
+    --yang: #d4af37;
+    --yin: #6a5d8a;
+    --shadow: 0 8px 24px rgba(0,0,0,.35);
+  }
+  html, body { height: 100%; }
+  body{
+    font-family: 'Noto Serif KR', 'Nanum Myeongjo', -apple-system, BlinkMacSystemFont, 'Segoe UI', serif;
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 10% 0%, rgba(217,119,87,.06) 0, transparent 45%),
+      radial-gradient(circle at 90% 100%, rgba(212,175,55,.05) 0, transparent 50%);
+    color: var(--text);
+    line-height: 1.75;
+    min-height: 100vh;
+  }
+  .wrap{ max-width: 1080px; margin: 0 auto; padding: 32px 22px 80px; }
+
+  /* ── 헤더 ─────────────────────────────── */
+  header{ text-align:center; margin-bottom: 28px; }
+  header .ttl{
+    font-size: 30px; font-weight: 700; letter-spacing: .04em;
+    background: linear-gradient(135deg, var(--accent-soft), var(--gold) 60%, #f4e7c0);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 6px;
+  }
+  header .sub{ color: var(--text-dim); font-size: 13px; letter-spacing: .12em; }
+  header .date{ color: var(--muted); font-size: 12px; margin-top: 6px; letter-spacing: .15em; }
+
+  /* ── Claude 스타일 입력창 ───────────────── */
+  .claude-input{
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 14px 16px 12px;
+    box-shadow: var(--shadow);
+    margin-bottom: 28px;
+    transition: border-color .2s ease;
+  }
+  .claude-input:focus-within{ border-color: var(--accent); }
+  .claude-input textarea{
+    width: 100%;
+    background: transparent;
+    border: 0;
+    outline: 0;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 15px;
+    line-height: 1.6;
+    resize: none;
+    min-height: 56px;
+    max-height: 220px;
+  }
+  .claude-input textarea::placeholder{ color: var(--muted); font-style: italic; }
+  .ci-row{
+    display:flex; align-items:center; justify-content: space-between;
+    margin-top: 8px;
+  }
+  .ci-tools{ display:flex; gap:6px; }
+  .ci-chip{
+    background: var(--bg-soft); border:1px solid var(--border-soft);
+    color: var(--text-dim); border-radius: 999px; padding: 4px 10px;
+    font-size: 11px; letter-spacing: .08em;
+  }
+  .ci-send{
+    background: var(--accent); color: #fff; border: 0;
+    border-radius: 10px; padding: 8px 14px; cursor: pointer;
+    font-weight: 600; font-size: 13px; letter-spacing: .05em;
+    transition: background .15s ease, transform .15s ease;
+  }
+  .ci-send:hover{ background: #c46748; transform: translateY(-1px); }
+  .ci-send:disabled{ opacity: .5; cursor: not-allowed; transform:none; }
+  .ci-btn{
+    background: var(--bg-soft); color: var(--text-dim); border: 1px solid var(--border-soft);
+    border-radius: 10px; padding: 7px 12px; cursor: pointer;
+    font-family: inherit; font-size: 12px; letter-spacing: .04em;
+    transition: all .15s ease;
+  }
+  .ci-btn:hover{ color: var(--text); border-color: var(--accent); }
+  .ci-btn.save{ color: var(--gold); border-color: var(--gold-dim, #8a7028); }
+  .ci-btn.save:hover{ background: rgba(212,175,55,.08); }
+  .ci-btn.new{ color: var(--accent-soft); }
+  .ci-btn.new:hover{ background: rgba(217,119,87,.08); }
+  .ci-actions{ display:flex; gap: 6px; align-items:center; }
+  .ci-status{
+    font-size: 11px; color: var(--jade); margin-left: 8px;
+    opacity: 0; transition: opacity .25s ease;
+    letter-spacing: .05em;
+  }
+  .ci-status.show{ opacity: 1; }
+  .ci-meta{
+    font-size: 11px; color: var(--muted); margin-top: 6px;
+    letter-spacing: .05em;
+  }
+
+  /* ── 저장된 일기 목록 ───────────────── */
+  .diary-list{
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-top: 14px;
+    overflow: hidden;
+    display: none;
+  }
+  .diary-list.show{ display: block; }
+  .diary-list-head{
+    padding: 10px 14px;
+    background: var(--bg-soft);
+    border-bottom: 1px solid var(--border);
+    display:flex; justify-content: space-between; align-items:center;
+    font-size: 12px; color: var(--text-dim); letter-spacing: .08em;
+  }
+  .diary-list-head .count{ color: var(--gold); }
+  .diary-clear{
+    background: transparent; border: 0; color: var(--muted);
+    font-size: 11px; cursor: pointer; font-family: inherit;
+    letter-spacing: .05em;
+  }
+  .diary-clear:hover{ color: var(--accent); }
+  .diary-item{
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background .15s ease;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    align-items: start;
+  }
+  .diary-item:last-child{ border-bottom: 0; }
+  .diary-item:hover{ background: var(--bg-soft); }
+  .diary-item .body{
+    font-size: 13px; color: var(--text);
+    overflow: hidden; text-overflow: ellipsis;
+    display: -webkit-box; -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-height: 1.5;
+  }
+  .diary-item .right{
+    text-align: right;
+    display:flex; flex-direction:column; align-items: flex-end; gap: 4px;
+  }
+  .diary-item .date{
+    font-size: 10px; color: var(--muted); letter-spacing: .05em;
+  }
+  .diary-item .hex{
+    font-size: 14px; color: var(--gold);
+  }
+  .diary-item .del{
+    background: transparent; border: 0; color: var(--muted);
+    font-size: 11px; cursor: pointer; font-family: inherit;
+    padding: 2px 6px;
+  }
+  .diary-item .del:hover{ color: var(--accent); }
+  .toggle-list{
+    background: transparent; border: 0; color: var(--text-dim);
+    cursor: pointer; font-size: 12px; font-family: inherit;
+    margin-top: 10px; letter-spacing: .05em;
+    display:flex; align-items:center; gap: 4px;
+  }
+  .toggle-list:hover{ color: var(--gold); }
+
+  /* ── 섹션 카드 ───────────────────────── */
+  section{
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px 22px;
+    margin-bottom: 22px;
+    box-shadow: var(--shadow);
+  }
+  section h2{
+    font-size: 19px; color: var(--gold);
+    letter-spacing: .05em; margin-bottom: 14px;
+    display:flex; align-items:center; gap: 10px;
+  }
+  section h2::before{
+    content:""; width: 4px; height: 18px;
+    background: linear-gradient(180deg, var(--accent), var(--gold));
+    border-radius: 2px;
+  }
+  section h3{
+    font-size: 15px; color: var(--accent-soft);
+    margin: 14px 0 6px; letter-spacing: .04em;
+  }
+  section p{ color: var(--text); font-size: 14px; }
+  section .small{ color: var(--text-dim); font-size: 13px; }
+
+  /* ── 어제의 정세 카드 ─────────────────── */
+  .news-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 14px; margin-top: 8px; }
+  .news-card{
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    position: relative;
+  }
+  .news-card .tag{
+    font-size: 11px; letter-spacing: .1em;
+    color: var(--muted); margin-bottom: 6px;
+  }
+  .news-card .hex-mini{
+    font-size: 12px; color: var(--gold);
+    margin-top: 8px; padding-top: 8px;
+    border-top: 1px dashed var(--border-soft);
+  }
+  .news-card .trigrams{
+    font-size: 22px; color: var(--accent-soft);
+    letter-spacing: .15em; margin-bottom: 6px;
+  }
+
+  /* ── 64괘 격자 ───────────────────────── */
+  .grid64{
+    display:grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 6px;
+    margin-top: 8px;
+  }
+  .hex-cell{
+    aspect-ratio: 1;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    cursor: pointer;
+    transition: all .15s ease;
+    padding: 4px;
+    text-align:center;
+  }
+  .hex-cell:hover{
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    background: var(--bg-soft);
+  }
+  .hex-cell.active{
+    background: linear-gradient(135deg, rgba(217,119,87,.18), rgba(212,175,55,.12));
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent);
+  }
+  .hex-cell .num{ font-size: 10px; color: var(--muted); }
+  .hex-cell .sym{ font-size: 16px; color: var(--gold); letter-spacing: .05em; line-height: 1; margin: 3px 0; }
+  .hex-cell .nm{ font-size: 10px; color: var(--text-dim); }
+  @media (max-width: 720px){
+    .grid64{ grid-template-columns: repeat(4, 1fr); }
+    .hex-cell .nm{ font-size: 11px; }
+  }
+
+  /* ── 선택된 괘 디테일 ─────────────────── */
+  .hex-detail{ display:none; }
+  .hex-detail.show{ display:block; }
+  .hex-head{
+    display:flex; align-items:center; gap: 16px;
+    padding: 14px; border-radius: 12px;
+    background: linear-gradient(135deg, rgba(217,119,87,.10), rgba(212,175,55,.06));
+    border: 1px solid var(--border-soft);
+    margin-bottom: 16px;
+  }
+  .hex-head .lg-sym{
+    font-size: 44px; color: var(--gold);
+    line-height: 1; min-width: 70px; text-align:center;
+    letter-spacing: .1em;
+  }
+  .hex-head .meta .num{ font-size: 12px; color: var(--muted); letter-spacing: .15em; }
+  .hex-head .meta .nm{ font-size: 22px; color: var(--accent-soft); font-weight: 700; margin: 2px 0; }
+  .hex-head .meta .ch{ font-size: 12px; color: var(--text-dim); }
+  .hex-head .meta .kw{ font-size: 13px; color: var(--gold); margin-top: 6px; letter-spacing: .05em; }
+
+  .sub-section{
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+  }
+  .sub-section.gold{ border-left-color: var(--gold); }
+  .sub-section.jade{ border-left-color: var(--jade); }
+  .sub-section.plum{ border-left-color: var(--plum); }
+  .sub-section.sky{ border-left-color: var(--sky); }
+  .sub-section h3{ margin-top: 0; }
+  .verse{
+    font-style: italic; color: var(--text-dim);
+    border-left: 2px solid var(--gold);
+    padding-left: 12px; margin: 8px 0; font-size: 13.5px;
+  }
+
+  /* ── 오늘의 질문 ─────────────────────── */
+  .daily-q{
+    background: linear-gradient(135deg, rgba(217,119,87,.14), rgba(212,175,55,.08));
+    border: 1px solid var(--accent);
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+    margin-top: 26px;
+  }
+  .daily-q .label{ font-size: 11px; letter-spacing: .25em; color: var(--gold); margin-bottom: 10px; }
+  .daily-q .q{
+    font-size: 19px; color: var(--text);
+    line-height: 1.7; font-weight: 500;
+    max-width: 720px; margin: 0 auto;
+  }
+  .daily-q .q::before{ content:"「 "; color: var(--accent); }
+  .daily-q .q::after{ content:" 」"; color: var(--accent); }
+
+  /* ── 안내 텍스트 ──────────────────────── */
+  .hint{
+    text-align:center; color: var(--muted); font-size: 12px;
+    padding: 30px 0; font-style: italic;
+  }
+
+  footer{
+    text-align:center; color: var(--muted); font-size: 11px;
+    margin-top: 40px; letter-spacing: .15em;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="ttl">오늘의 64괘 — 정감록·예수제자의 길</div>
+    <div class="sub">동서 융합 일진 · 주역으로 읽는 세상과 마음</div>
+    <div class="date" id="todayDate"></div>
+  </header>
+
+  <!-- Claude 스타일 입력창 -->
+  <div class="claude-input">
+    <textarea id="userPrompt" placeholder="오늘 마음에 걸리는 것, 묻고 싶은 것, 또는 하루 일기를 적어보세요."></textarea>
+    <div class="ci-meta" id="ciMeta"></div>
+    <div class="ci-row">
+      <div class="ci-tools">
+        <span class="ci-chip">주역 64괘</span>
+        <span class="ci-chip">정감록</span>
+        <span class="ci-chip">예수제자</span>
+      </div>
+      <div class="ci-actions">
+        <span class="ci-status" id="ciStatus"></span>
+        <button class="ci-btn new" id="newBtn" title="새로 쓰기">＋ 새로 쓰기</button>
+        <button class="ci-btn save" id="saveBtn" title="일기 저장">💾 저장</button>
+        <button class="ci-send" id="sendBtn">묻기 ↑</button>
+      </div>
+    </div>
+    <button class="toggle-list" id="toggleListBtn">📖 저장된 일기 보기 <span id="listCountBadge"></span></button>
+    <div class="diary-list" id="diaryList">
+      <div class="diary-list-head">
+        <span>지난 일기 — <span class="count" id="diaryCount">0</span>편</span>
+        <button class="diary-clear" id="clearAllBtn">전체 삭제</button>
+      </div>
+      <div id="diaryItems"></div>
+    </div>
+  </div>
+
+  <!-- 1. 어제의 정세 64괘 해석 -->
+  <section>
+    <h2>1. 지난 하루의 상황 — 64괘로 풀어보다</h2>
+    <p class="small" id="yesterdayDate" style="margin-bottom:10px;"></p>
+    <div class="news-grid" id="newsGrid"></div>
+  </section>
+
+  <!-- 2. 64괘 선택 -->
+  <section>
+    <h2>2. 오늘의 일진괘 — 64괘 중 하나를 직접 선택</h2>
+    <p class="small">마음을 가다듬고, 끌리는 괘 하나를 손가락으로 짚어보세요. 우연 속에 길이 열립니다.</p>
+    <div class="grid64" id="grid64"></div>
+    <div class="hint" id="emptyHint">↑ 위에서 괘를 하나 선택하면 오늘의 풀이가 펼쳐집니다.</div>
+
+    <!-- 디테일 -->
+    <div class="hex-detail" id="hexDetail">
+      <div class="hex-head" id="hexHead"></div>
+
+      <div class="sub-section gold">
+        <h3>괘의 해석</h3>
+        <p id="hexInterp"></p>
+      </div>
+
+      <div class="sub-section">
+        <h3>이 괘와 함께하는 예수의 말씀</h3>
+        <div class="verse" id="hexVerse"></div>
+        <p id="hexVerseExp"></p>
+      </div>
+
+      <div class="sub-section gold">
+        <h3>나는 오늘 어떤 마음가짐으로 살아야 하는가</h3>
+        <p id="hexMindset"></p>
+      </div>
+
+      <div class="sub-section sky">
+        <h3>나의 주식 동향과 투자법</h3>
+        <p id="hexStock"></p>
+      </div>
+
+      <div class="sub-section plum">
+        <h3>이 괘로 보는 불교적 수행방법</h3>
+        <p id="hexBuddha"></p>
+      </div>
+
+      <div class="sub-section jade">
+        <h3>제가(齊家)적 수행법 — 집안과 사람의 도(道)</h3>
+        <p id="hexJega"></p>
+      </div>
+
+      <div class="sub-section">
+        <h3>예수가 인도하는 제자화 수행법</h3>
+        <p id="hexDisciple"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. 정감록 풍수 + 예수제자 행동철학 -->
+  <section id="jeongSection" style="display:none;">
+    <h2>3. 정감록·풍수의 결로 — 오늘의 행동철학</h2>
+    <div class="sub-section gold">
+      <h3>정감록·풍수가 가리키는 방향</h3>
+      <p id="hexJeong"></p>
+    </div>
+    <div class="sub-section">
+      <h3>예수제자의 오늘의 행동</h3>
+      <p id="hexAction"></p>
+    </div>
+  </section>
+
+  <!-- 4. 오늘의 철학적 질문 -->
+  <div class="daily-q" id="dailyQBox" style="display:none;">
+    <div class="label">오늘 하루의 철학적 질문</div>
+    <div class="q" id="dailyQ"></div>
+  </div>
+
+  <footer>
+    天行健 君子以自彊不息 · 한 마음으로 하늘 길을 걷다
+  </footer>
+</div>
+
+<script>
+/* ──────────────────────────────────────────
+   64괘 데이터 — 이름·괘상·키워드 + 풀이 데이터
+   ──────────────────────────────────────────*/
+const HEX = [
+  ["䷀","건위천","乾爲天","창조·진취","하늘이 강건하니 군자는 스스로 굳세어 쉬지 않는다."],
+  ["䷁","곤위지","坤爲地","수용·포용","땅의 기세가 곤하니 군자는 두터운 덕으로 만물을 싣는다."],
+  ["䷂","수뢰둔","水雷屯","시작의 어려움","구름과 우레가 둔하니 군자는 천하를 다스림에 경륜한다."],
+  ["䷃","산수몽","山水蒙","무지·교육","산 아래 샘이 나니 군자는 행함을 과감히 하고 덕을 기른다."],
+  ["䷄","수천수","水天需","기다림","구름이 하늘 위에 있으니 군자는 마시고 먹으며 잔치한다."],
+  ["䷅","천수송","天水訟","송사·다툼","하늘과 물이 어긋나니 군자는 일을 시작함에 모책을 한다."],
+  ["䷆","지수사","地水師","군사·통솔","땅 가운데 물이 있으니 군자는 백성을 용납하여 무리를 기른다."],
+  ["䷇","수지비","水地比","친밀·동맹","땅 위에 물이 있으니 선왕이 만국을 세워 제후를 친히 한다."],
+  ["䷈","풍천소축","風天小畜","작은 축적","바람이 하늘 위에 행하니 군자는 문덕을 아름답게 한다."],
+  ["䷉","천택리","天澤履","예의·실천","위는 하늘 아래는 못이니 군자는 상하를 분별해 백성의 뜻을 정한다."],
+  ["䷊","지천태","地天泰","평화·소통","하늘과 땅이 사귀니 임금은 천지의 도를 마름질해 백성을 돕는다."],
+  ["䷋","천지비","天地否","불통·막힘","하늘과 땅이 사귀지 않으니 군자는 검약한 덕으로 어려움을 피한다."],
+  ["䷌","천화동인","天火同人","연대·합심","하늘과 불이 동인하니 군자는 무리로써 사물을 분별한다."],
+  ["䷍","화천대유","火天大有","큰 소유·풍요","불이 하늘 위에 있으니 군자는 악을 막고 선을 드러낸다."],
+  ["䷎","지산겸","地山謙","겸손","땅 가운데 산이 있으니 군자는 많은 것을 덜어 적은 것에 보탠다."],
+  ["䷏","뇌지예","雷地豫","기쁨·예비","우레가 땅에서 나오니 선왕이 음악을 지어 덕을 높인다."],
+  ["䷐","택뢰수","澤雷隨","따름·순응","못 가운데 우레가 있으니 군자는 어두우면 들어가 편안히 쉰다."],
+  ["䷑","산풍고","山風蠱","바로잡음","산 아래 바람이 있으니 군자는 백성을 떨쳐 일으켜 덕을 기른다."],
+  ["䷒","지택림","地澤臨","임함·내려옴","못 위에 땅이 있으니 군자는 가르침의 뜻이 다함이 없다."],
+  ["䷓","풍지관","風地觀","관찰·성찰","바람이 땅 위에 행하니 선왕이 사방을 살펴 가르침을 베푼다."],
+  ["䷔","화뢰서합","火雷噬嗑","결단·집행","우레와 번개가 서합이니 선왕이 형벌을 밝혀 법을 거듭한다."],
+  ["䷕","산화비","山火賁","꾸밈·예의","산 아래 불이 있으니 군자는 정사를 밝히되 함부로 판단하지 않는다."],
+  ["䷖","산지박","山地剝","깎임·쇠퇴","산이 땅에 붙으니 윗사람이 후하게 하여 아래를 편안하게 한다."],
+  ["䷗","지뢰복","地雷復","돌아옴·회복","우레가 땅 가운데 있으니 선왕이 동지에 관문을 닫는다."],
+  ["䷘","천뢰무망","天雷无妄","무망·순수","하늘 아래 우레가 행하니 선왕이 만물을 길러 때에 맞춘다."],
+  ["䷙","산천대축","山天大畜","큰 축적·수련","하늘이 산 가운데 있으니 군자는 옛 말과 행실을 많이 알아 덕을 쌓는다."],
+  ["䷚","산뢰이","山雷頤","기름·자양","산 아래 우레가 있으니 군자는 말을 삼가고 음식을 절제한다."],
+  ["䷛","택풍대과","澤風大過","과대·전환","못이 나무를 멸하니 군자는 홀로 서되 두려워하지 않는다."],
+  ["䷜","감위수","坎爲水","위험·반복","물이 거듭 이르니 군자는 떳떳한 덕을 행하고 가르치는 일을 익힌다."],
+  ["䷝","이위화","離爲火","밝음·총명","밝음이 두 번 일어나니 대인이 밝음을 이어 사방을 비춘다."],
+  ["䷞","택산함","澤山咸","감응·교류","산 위에 못이 있으니 군자는 자기를 비워 사람을 받아들인다."],
+  ["䷟","뇌풍항","雷風恒","항구·지속","우레와 바람이 항이니 군자는 서서 방소를 바꾸지 않는다."],
+  ["䷠","천산둔","天山遯","물러남","하늘 아래 산이 있으니 군자는 소인을 멀리하되 미워하지 않고 엄히 한다."],
+  ["䷡","뇌천대장","雷天大壯","씩씩함·기세","우레가 하늘 위에 있으니 군자는 예가 아니면 행하지 않는다."],
+  ["䷢","화지진","火地晉","나아감","밝음이 땅 위로 나오니 군자는 스스로 밝은 덕을 밝힌다."],
+  ["䷣","지화명이","地火明夷","상함·은인","밝음이 땅 가운데 들어가니 군자는 무리에 임함에 어둠을 쓰고도 밝다."],
+  ["䷤","풍화가인","風火家人","가정·집안","바람이 불에서 나오니 군자는 말은 실답게, 행실은 항구하게 한다."],
+  ["䷥","화택규","火澤睽","어긋남·이견","위는 불 아래는 못이니 군자는 같이하되 다른 것을 본다."],
+  ["䷦","수산건","水山蹇","장애·고난","산 위에 물이 있으니 군자는 몸을 돌이켜 덕을 닦는다."],
+  ["䷧","뇌수해","雷水解","풀림·해방","우레와 비가 해이니 군자는 허물을 사하고 죄를 너그러이 한다."],
+  ["䷨","산택손","山澤損","덜어냄·검약","산 아래 못이 있으니 군자는 분함을 징계하고 욕심을 막는다."],
+  ["䷩","풍뢰익","風雷益","더함·이익","바람과 우레가 익이니 군자는 선을 보면 옮기고 허물을 고친다."],
+  ["䷪","택천쾌","澤天夬","결단·터짐","못이 하늘 위에 있으니 군자는 녹을 베풀어 아래에 미치게 한다."],
+  ["䷫","천풍구","天風姤","만남·우연","하늘 아래 바람이 있으니 임금이 명을 베풀어 사방에 가르친다."],
+  ["䷬","택지췌","澤地萃","모임·결집","못이 땅 위에 있으니 군자는 병기를 손질해 뜻밖의 변을 경계한다."],
+  ["䷭","지풍승","地風升","상승·도약","땅 가운데 나무가 자라니 군자는 덕을 따라 작은 것을 쌓아 높이 한다."],
+  ["䷮","택수곤","澤水困","곤궁·시련","못에 물이 없으니 군자는 목숨을 다해 뜻을 이룬다."],
+  ["䷯","수풍정","水風井","우물·근본","나무 위에 물이 있으니 군자는 백성을 수고롭게 권면해 서로 돕게 한다."],
+  ["䷰","택화혁","澤火革","혁신·변혁","못 가운데 불이 있으니 군자는 역법을 다스려 때를 밝힌다."],
+  ["䷱","화풍정","火風鼎","솥·정립","나무 위에 불이 있으니 군자는 자리를 바르게 해 명을 응결한다."],
+  ["䷲","진위뢰","震爲雷","움직임·놀람","우레가 거듭 이르니 군자는 두려워하며 자기를 닦고 살핀다."],
+  ["䷳","간위산","艮爲山","멈춤·정지","산이 거듭 간이니 군자는 생각이 그 자리를 벗어나지 않는다."],
+  ["䷴","풍산점","風山漸","점진·순서","산 위에 나무가 있으니 군자는 어진 덕에 거하여 풍속을 선하게 한다."],
+  ["䷵","뇌택귀매","雷澤歸妹","돌아감·결합","못 위에 우레가 있으니 군자는 영원함을 알아 폐단을 안다."],
+  ["䷶","뇌화풍","雷火豐","풍요·정점","우레와 번개가 함께 이르니 군자는 옥사를 결단하고 형을 이룬다."],
+  ["䷷","화산려","火山旅","여행·나그네","산 위에 불이 있으니 군자는 형벌을 밝게 살피고 옥사를 머물게 하지 않는다."],
+  ["䷸","손위풍","巽爲風","공손·침투","바람이 거듭 손이니 군자는 명을 펴서 일을 행한다."],
+  ["䷹","태위택","兌爲澤","기쁨·소통","못이 거듭 태이니 군자는 벗과 함께 강습한다."],
+  ["䷺","풍수환","風水渙","흩어짐·해체","바람이 물 위에 행하니 선왕이 상제께 누리어 사당을 세운다."],
+  ["䷻","수택절","水澤節","절제·매듭","못 위에 물이 있으니 군자는 수와 도를 헤아려 덕행을 의논한다."],
+  ["䷼","풍택중부","風澤中孚","진실·신실","못 위에 바람이 있으니 군자는 옥사를 의논하고 사형을 늦춘다."],
+  ["䷽","뇌산소과","雷山小過","작은 지나침","산 위에 우레가 있으니 군자는 행함에 공손함을 지나치게 한다."],
+  ["䷾","수화기제","水火旣濟","완성·이룸","물이 불 위에 있으니 군자는 환란을 생각하여 미리 막는다."],
+  ["䷿","화수미제","火水未濟","미완·진행중","불이 물 위에 있으니 군자는 사물을 분별해 자리를 바르게 한다."]
+];
+
+/* 풀이 데이터 — 각 괘에 대한 6대 해석 */
+const READING = [
+  // 1. 건위천
+  {
+    interp: "강건한 양(陽)이 여섯 자리를 가득 채운 순수 창조의 괘. 새 일을 시작할 때이며, 하늘처럼 쉬지 않고 나아가야 한다. 단, 항룡유회(亢龍有悔) — 너무 높이 오르면 후회가 따른다.",
+    verse: "“내가 진실로 진실로 너희에게 이르노니 나를 믿는 자는 내가 하는 일을 그도 할 것이요 또한 이보다 큰 것도 하리니” (요한 14:12)",
+    verseExp: "예수께서 우리를 ‘함께 일하는 자’로 부르신다. 건괘는 곧 하나님과 동역(同役)하는 자리이다. 단 교만은 추락의 씨앗임을 잊지 말라.",
+    mindset: "쉬지 않되 우쭐대지 않는다. ‘自彊不息(스스로 굳세어 쉬지 않음)’을 새기되, ‘亢龍有悔(높이 오른 용의 후회)’를 거울 삼는다.",
+    stock: "상승장의 초입 신호. 대형 우량주·주도주에 집중하고, 분할매수로 추세를 따른다. 단 고점매수는 금물. 익절선을 미리 정해두고 6번째 효(상효)가 오면 욕심을 거두라.",
+    buddha: "정진바라밀(精進波羅蜜). 하루 30분 좌선으로 몸을 곧게 세우고 호흡을 길게. 게으름을 적(賊)으로 알고, 그러나 ‘성취감’ 또한 집착으로 두지 말라.",
+    jega: "가장(家長)이 먼저 일어나라. 새벽을 열고, 가족이 일어날 자리를 따뜻하게 데워두는 사람이 집의 하늘이 된다. 잔소리 대신 솔선수범.",
+    disciple: "마태 28:19 ‘가서 모든 민족을 제자로 삼아…’ — 오늘은 ‘시작’의 날. 한 사람에게 복음을 나누거나, 한 영혼을 위해 기도하라. 큰 뜻은 작은 발걸음에서 시작된다.",
+    jeong: "정감록의 ‘十勝之地’ 가운데 ‘건방(乾方·서북)’의 기운이 강하다. 서북향 책상·창을 잠시 정돈하고, 높은 산을 한 번 바라보라. 하늘 기운이 머리로 들어온다.",
+    action: "오늘 ‘처음의 한 걸음’을 떼라. 미루어둔 그 일, 두려워하던 그 전화, 망설이던 그 말 — 정오 전에 결행하라. 예수제자는 두려움이 아니라 약속을 따라 움직인다.",
+    q: "내가 오늘 가장 먼저 시작해야 할 한 가지 ‘선한 일’은 무엇인가?"
+  },
+  // 2. 곤위지
+  {
+    interp: "순수한 음(陰)의 괘. 받아들이고 품고 길러내는 땅의 덕. 앞장서기보다 따르고 기다리는 것이 길하다. 牝馬之貞(빈마지정) — 암말처럼 곧고 부드러우라.",
+    verse: "“수고하고 무거운 짐 진 자들아 다 내게로 오라 내가 너희를 쉬게 하리라” (마태 11:28)",
+    verseExp: "곤(坤)은 짐을 진다. 그러나 예수의 멍에는 가볍다. 오늘은 짐을 혼자 지지 말고, 주께 맡기는 연습을 하라.",
+    mindset: "‘내가 옳다’ 대신 ‘내가 모자라다’를 먼저 말하라. 침묵·경청·승복이 오늘의 보약. 후덕재물(厚德載物) — 두터운 덕으로 만물을 싣는다.",
+    stock: "추세 추종보다 ‘기다림의 매수’. 현금 비중을 늘리고, 이미 보유한 우량주는 ‘덮어두고 묵히는’ 자세. 큰 손이 바닥을 다질 때까지 따라 들어가지 말라.",
+    buddha: "보시·인욕바라밀. 작은 보시 하나(밥 한 그릇·자리 양보)와, 한 번의 인욕(참고 넘어감)을 실천하라. 분별 없는 받아들임이 곧 지혜다.",
+    jega: "아내·어머니·여성성의 자리를 존중하라. 가정의 ‘땅’이 되는 사람을 위로하라. 부모님께 말없는 안부를 보내는 날.",
+    disciple: "누가 10:39 마리아처럼 ‘발 앞에 앉아 듣는 제자’가 되라. 오늘 말하기 전에 두 번 들어라. 한 사람의 이야기를 다 들어주는 것 자체가 사역이다.",
+    jeong: "곤방(坤方·서남)이 길하다. 낮은 곳·평지·강가가 좋다. 욕심을 비우고 낮은 자리에 거하라. 정감록의 ‘피난처는 산이 아니라 사람’ — 좋은 사람 곁에 머물라.",
+    action: "오늘 누군가의 이야기를 ‘끝까지’ 들어주라. 충고·해결책 없이. 듣는 것이 오늘의 가장 큰 행함이다.",
+    q: "나는 오늘 누구의 ‘땅’이 되어줄 수 있는가?"
+  },
+  // 3. 수뢰둔
+  {
+    interp: "시작은 어렵다. 우레가 물 아래에서 움트는 형국. 막혀 있으나 멈추지 말 것. 利建侯(이건후) — 도와줄 사람을 세우면 길하다.",
+    verse: "“참는 자에게는 마지막이 시작보다 나으니” (전도서 7:8) / “구하라 그리하면 너희에게 주실 것이요” (마태 7:7)",
+    verseExp: "막힘은 결말이 아니라 시작의 한 형태. 도움을 ‘구하라’. 혼자 뚫으려 하지 말고 조력자를 찾으라.",
+    mindset: "조급함을 거두라. 뿌리가 흙을 뚫는 시간이 필요하다. ‘느린 것이 결국 빠른 것’임을 받아들이는 하루.",
+    stock: "신규 진입 금물. 종목 발굴·공부의 시기. 관심종목 리스트를 정리하고, 자금은 분산해 둔다. 변동성에 휘둘려 손절·뇌동매매를 하지 말 것.",
+    buddha: "참회와 발원의 좌선. 십념(十念)으로 마음을 가라앉히라. 어려움 그 자체가 도(道)의 입구.",
+    jega: "가족 일에 ‘덮어놓고 결정’ 말 것. 회의·대화 시간을 갖고, 어른의 조언을 구하라. 어른은 막힘을 푸는 열쇠.",
+    disciple: "예수께서 광야 40일을 거치셨듯, 오늘의 막힘은 훈련. 멘토·소그룹·동역자를 찾고, 함께 기도 제목을 나누라.",
+    jeong: "북동(艮方) 산기슭이 길지. 막힌 일은 산을 한 번 바라보고 결정하라. 정감록이 말하는 ‘십승지’의 핵심은 ‘난세에 함께 기도할 사람’이 있는 곳.",
+    action: "오늘 ‘도와달라’는 말을 입에 올리라. 그 한마디가 막힌 물을 푼다.",
+    q: "내가 지금 막혀 있는 그 일에, 도움을 청해야 할 ‘한 사람’은 누구인가?"
+  },
+  // 4. 산수몽
+  {
+    interp: "어린 새싹의 무지함. 그러나 묻고 배우면 통한다. 童蒙求我(동몽구아) — 어리석은 자가 나를 찾는다. 가르침을 구하라.",
+    verse: "“너희가 돌이켜 어린아이들과 같이 되지 아니하면 결단코 천국에 들어가지 못하리라” (마태 18:3)",
+    verseExp: "몽(蒙)은 부끄러움이 아니라 가능성. 모름을 인정하는 자에게 하늘이 길을 연다.",
+    mindset: "아는 척하지 말 것. 오늘은 ‘모릅니다, 가르쳐 주세요’가 가장 강한 말. 겸손한 학생의 자세.",
+    stock: "초보가 고수의 종목을 따라가는 것 금물. ‘왜 사는지’ 설명할 수 없으면 사지 말라. 차트·재무제표 공부의 날로 삼아라.",
+    buddha: "지혜바라밀의 시작은 ‘무지의 자각’. 경전 한 구절을 베껴 쓰고, 한 줄 깨달음을 적어두라.",
+    jega: "자녀·아랫사람을 ‘가르치되 군림하지 말라’. 한 번 가르치고 세 번 기다리는 인내. 부모도 함께 배운다.",
+    disciple: "예수의 제자훈련은 ‘질문’으로 시작했다. 좋은 질문 하나가 백 번의 설교보다 낫다. 오늘 누군가에게 좋은 질문을 던지라.",
+    jeong: "동북(艮)의 산수(山水) 기운. 책상·서재의 위치를 점검. 정감록의 ‘피난은 책 속에도 있다’ — 책 한 권을 손에 잡으라.",
+    action: "모르는 것을 ‘모른다’고 말하고, 한 명에게 진심으로 배움을 청하라.",
+    q: "오늘 내가 ‘배워야 할 한 가지’는 무엇이며, 누구에게 물을 것인가?"
+  },
+  // 5. 수천수
+  {
+    interp: "구름이 하늘 위에 모였으나 아직 비는 내리지 않았다. 기다림의 괘. 信而光亨(신이광형) — 신실하면 빛나며 형통한다. 음식과 잔치로 몸을 보양하며 때를 기다리라.",
+    verse: "“너희는 가만히 있어 내가 하나님 됨을 알지어다” (시편 46:10)",
+    verseExp: "수(需)는 ‘기다림’이며 동시에 ‘필요’. 하나님이 채우실 때까지 가만히 있는 훈련.",
+    mindset: "재촉하지 말 것. 잘 먹고 잘 자며 몸을 다스리는 날. 기다림은 게으름이 아니라 ‘준비된 멈춤’.",
+    stock: "관망. 호가창을 줄여라. 1~2주 후의 변곡점을 보고 진입할 종목을 미리 정해두되, 오늘은 지켜만 보라.",
+    buddha: "선정바라밀. 호흡 한 번에 한 생각을 내려놓고, 30분 좌선. 비는 때가 되면 내린다.",
+    jega: "함께 식사하는 날. 음식을 정성껏 준비해 가족과 마주 앉으라. 식탁이 곧 가정의 제단.",
+    disciple: "예수께서도 40일을 광야에서, 30년을 침묵의 준비에서. 제자훈련의 큰 부분은 ‘대기’. 묵상·필사·기도로 영혼을 살찌우라.",
+    jeong: "감방(坎·북)의 물 기운. 음수(飮水) 관리에 유의. 정감록의 ‘난을 피하려면 먼저 몸을 다스리라’ — 식음을 가지런히 하라.",
+    action: "오늘 ‘아무것도 결정하지 않는’ 용기를 가져라. 그러나 정성껏 밥상을 차려라.",
+    q: "내가 지금 ‘기다려야 하는’ 그 일은 무엇이며, 그 사이 무엇으로 나를 채울 것인가?"
+  },
+  // 6. 천수송 ~ 64. 화수미제까지 데이터를 생성
+];
+
+/* 6~64괘는 패턴 기반으로 생성 — 키워드를 살려 짧고 단단한 풀이 */
+const PATTERNS = {
+  6:  { mindset:"다툼을 피하라. 옳음보다 화평이 더 큰 이김이다.", stock:"매매 보류. 분쟁 가능성 있는 종목·테마 회피.", buddha:"인욕바라밀, 침묵.", jega:"가족과의 말다툼은 오늘 무조건 양보.", disciple:"마태 5:25 ‘급히 사화하라’. 화해의 전화 한 통.", jeong:"송사 피하려면 ‘남향 햇볕’ 받는 자리에 30분 앉으라.", action:"내가 옳아도 한 발 물러서라.", q:"내가 굳이 이기려 했던 그 다툼, 진실로 가치 있는가?" },
+  7:  { mindset:"규율과 책임. 조직 안에서 자기 역할을 다하라.", stock:"규칙 기반 매매. 손절선·익절선 엄수.", buddha:"계율 점검. 작은 약속 하나 지키기.", jega:"가풍·가규를 다시 세우라.", disciple:"리더십은 섬김. 한 사람을 책임지는 멘토되기.", jeong:"북서(乾) 방향에 등을 두면 통솔력 상승.", action:"오늘 ‘내가 책임지는 한 사람’을 위해 결정하라.", q:"나는 내 자리의 책임을 다하고 있는가?" },
+  8:  { mindset:"좋은 사람과 가까이. 친밀함이 곧 힘.", stock:"동조 매매보다 ‘함께 가는 종목’ 묶음 관찰. ETF·섹터.", buddha:"승가(僧伽)의 가치. 동행자와 함께 수행.", jega:"오랜 친구·가족에게 안부.", disciple:"교제(코이노니아). 소그룹·식탁 교제.", jeong:"가까운 사람이 곧 ‘십승지’.", action:"오늘 ‘함께 밥 먹기’.", q:"내 곁에 두어야 할 사람, 멀리해야 할 사람은 누구인가?" },
+  9:  { mindset:"작게 모으되 자랑 말라. 풍요는 절제에서.", stock:"소액 분할 적립. 큰 한 방 노리지 말 것.", buddha:"작은 선행을 매일 쌓는 적공(積功).", jega:"가계부를 펴라. 작은 절약이 큰 평화.", disciple:"십일조·작은 헌신의 회복.", jeong:"바람의 방향(東南)으로 책상.", action:"오늘 천 원이라도 저축·헌금.", q:"나는 작은 것에 충성하고 있는가?" },
+  10: { mindset:"호랑이 꼬리를 밟듯 조심. 예의가 곧 보호막.", stock:"리스크 관리 최우선. 레버리지·신용 자제.", buddha:"위의(威儀) — 걸음·말투의 단정함.", jega:"어른에게 깍듯이. 예가 평안을 부른다.", disciple:"순종의 자리. 권위 아래 들어가기.", jeong:"걷는 길의 방향을 살피라. 험지 피하기.", action:"오늘 ‘공손한 말 한마디’ 의식적으로.", q:"나는 위태로움 앞에서 조심하고 있는가?" },
+  11: { mindset:"천지가 통한다. 큰 평화의 날. 그러나 태평 속에 방심 없도록.", stock:"강세 흐름. 우량주 중장기 보유 유리.", buddha:"감사 명상.", jega:"가족 모임·화합의 자리.", disciple:"감사기도·간증 나누기.", jeong:"중앙(中央) 자리가 길지. 정중앙에 앉아 호흡.", action:"오늘 ‘감사합니다’를 다섯 번 말하라.", q:"내 삶의 어떤 부분이 지금 ‘태(泰)’의 평화 위에 있는가?" },
+  12: { mindset:"천지가 막혔다. 무리하지 말고 검소히.", stock:"현금화·관망. 신규 매수 금지.", buddha:"검약·소욕지족.", jega:"불필요한 외출·지출 줄이기.", disciple:"광야의 시간. 금식·기도.", jeong:"잠시 머무르라. 큰 결정은 다음 달로.", action:"오늘 한 끼 줄이고, 그만큼 기도하라.", q:"막힌 자리에서 나는 무엇을 비워야 하는가?" },
+  13: { mindset:"뜻 맞는 사람과 함께. 광야가 아니라 광장.", stock:"테마·동조 종목. 단 ‘함께 가는 이유’가 분명할 것.", buddha:"동수(同修) — 함께 정진.", jega:"형제·동기 우애.", disciple:"공동체 사역.", jeong:"광장·교회·시장 등 모이는 곳이 길지.", action:"한 사람과 같은 목표로 한 시간 함께 일하라.", q:"내가 함께해야 할 ‘동인(同人)’은 누구인가?" },
+  14: { mindset:"큰 소유. 그러나 ‘나의 것’이 아님을 알라.", stock:"포트폴리오 점검·이익 실현 일부.", buddha:"보시. 가진 것 중 한 가지 나누기.", jega:"풍요할수록 가족 앞에 겸손.", disciple:"청지기 정신. 모든 것은 맡겨진 것.", jeong:"창고·재정 위치 점검.", action:"오늘 한 가지를 나누라.", q:"내가 가진 것 중, 진실로 내 것은 무엇인가?" },
+  15: { mindset:"겸손이 으뜸. 낮은 자가 높아진다.", stock:"자랑하지 말고 조용히 모으라.", buddha:"하심(下心).", jega:"부모·배우자 앞에서 자세 낮추기.", disciple:"세족(洗足)의 자리.", jeong:"겸괘는 어디든 길하다. 낮은 자리가 곧 명당.", action:"오늘 ‘제가 부족합니다’를 진심으로 말하라.", q:"내가 더 낮춰야 할 자리는 어디인가?" },
+  16: { mindset:"기쁨과 예비. 음악과 즐거움 속에 미리 준비.", stock:"시장 호조. 단 환희매수 경계.", buddha:"법희(法喜).", jega:"가족과 음악·산책.", disciple:"찬양과 감사.", jeong:"동(東)의 우레. 아침 햇살 받으며 산책.", action:"오늘 30분 음악과 함께 걸으라.", q:"내 기쁨의 원천은 어디에 있는가?" },
+  17: { mindset:"따름의 미덕. 좋은 흐름을 거스르지 말라.", stock:"추세 추종. 역추세 매매 자제.", buddha:"수순(隨順)의 지혜.", jega:"배우자 의견 따르기.", disciple:"성령의 인도하심에 순종.", jeong:"흐르는 물 따라 걷기.", action:"오늘 ‘예’라고 두 번 말하라.", q:"나는 지금 누구를·무엇을 따라가고 있는가?" },
+  18: { mindset:"낡은 것을 바로잡으라. 미루어둔 일 정돈.", stock:"포트폴리오 정리. 부진주 손절.", buddha:"참회.", jega:"집안 청소·정리정돈.", disciple:"회개와 정결.", jeong:"낡은 가구·물건 한 가지 정리.", action:"30분 책상·서랍 청소.", q:"내가 미뤄둔 ‘바로잡을 일’은 무엇인가?" },
+  19: { mindset:"임함. 다가오는 기회를 두려워 말라.", stock:"새 종목 진입 가능. 단 8월까지의 흐름 보고 결단.", buddha:"임재(臨在) 명상.", jega:"가족에게 따뜻이 다가가기.", disciple:"임마누엘 — 함께 계심.", jeong:"높은 자리에서 아래를 살피라.", action:"먼저 다가가서 인사하라.", q:"내가 먼저 다가가야 할 사람은 누구인가?" },
+  20: { mindset:"바라봄·성찰. 행동보다 관찰의 날.", stock:"매매 자제. 차트·뉴스 관찰의 날.", buddha:"위빠사나·관(觀).", jega:"가족을 ‘말없이’ 관찰. 변화 알아채기.", disciple:"하나님 앞에서 자기 살피기.", jeong:"높은 곳·전망대.", action:"오늘 30분 ‘아무 말 없이’ 관찰만 하라.", q:"내 마음을 가만히 들여다보면 무엇이 보이는가?" },
+  21: { mindset:"가운데 가시를 빼라. 결단·집행.", stock:"손절은 빠르게, 익절은 분할.", buddha:"끊음. 번뇌의 가시 뽑기.", jega:"미뤄둔 가족 갈등 정면돌파(부드럽게).", disciple:"공의와 사랑의 균형.", jeong:"날카로운 도구 정리. 칼·가위.", action:"오늘 미루던 결정 하나를 끝내라.", q:"내가 더는 미룰 수 없는 결단은 무엇인가?" },
+  22: { mindset:"꾸밈은 본질을 돕는 도구. 형식과 내용의 조화.", stock:"화려한 테마주보다 본질 강한 종목.", buddha:"외형보다 내면.", jega:"식탁·집안의 작은 꾸밈.", disciple:"예배의 정성.", jeong:"문 입구·현관 정돈.", action:"꽃 한 송이 책상에 두라.", q:"내 삶에서 ‘꾸밈’과 ‘진실’의 비율은 적절한가?" },
+  23: { mindset:"깎이는 시기. 버틸 것은 버티고, 놓을 것은 놓으라.", stock:"하락장. 방어주·현금. 평균단가 낮추기 금물.", buddha:"무상(無常)을 받아들이라.", jega:"가족의 약함을 비난하지 말라.", disciple:"광야 — 깎임 또한 은혜.", jeong:"북서풍 거센 자리 피하기.", action:"오늘 ‘잃어도 괜찮다’ 한 가지를 정하라.", q:"무엇이 깎여나가야 진짜 나만 남는가?" },
+  24: { mindset:"돌아옴. 회개·회복의 날.", stock:"바닥 신호. 분할매수 시작 가능.", buddha:"본래면목으로 돌아가기.", jega:"멀어진 가족과의 화해.", disciple:"탕자의 귀향.", jeong:"동지(冬至)의 한 양(陽)이 돌아옴.", action:"멀어진 한 사람에게 먼저 연락하라.", q:"내가 돌아가야 할 본래 자리는 어디인가?" },
+  25: { mindset:"꾸밈 없이 진실하게. 망령됨 없는 마음.", stock:"테마·소문 매매 금지. 펀더멘털 우선.", buddha:"진여(眞如).", jega:"솔직한 대화.", disciple:"진실한 예배.", jeong:"꾸미지 않은 자연 가까이.", action:"거짓말 한 마디 줄이기.", q:"내가 오늘 꾸미고 있는 것은 무엇인가?" },
+  26: { mindset:"크게 쌓으라. 실력·자본·인격을 축적.", stock:"중장기 적립. 가치주 분할매수.", buddha:"오래 익히는 공부.", jega:"가족의 ‘덕’을 길러주는 한마디.", disciple:"말씀 묵상의 누적.", jeong:"창고·서재 정리.", action:"30분 책을 펴라.", q:"내가 1년 후를 위해 오늘 ‘쌓을 한 가지’는?" },
+  27: { mindset:"기름의 도(道). 말과 음식을 절제하라.", stock:"포트폴리오 ‘기르기’. 함부로 팔지 말 것.", buddha:"식관(食觀).", jega:"가족에게 따뜻한 한 끼.", disciple:"영혼의 양식 — 말씀.", jeong:"부엌·식탁 청결.", action:"오늘 ‘말 한마디·음식 한 입’을 의식적으로.", q:"나는 무엇으로 나와 가족을 기르고 있는가?" },
+  28: { mindset:"큰 지나침. 무너지기 전에 비우라.", stock:"과열주 차익실현. 신용·레버리지 위험.", buddha:"중도(中道) 회복.", jega:"과도한 일정·약속 줄이기.", disciple:"교만의 점검.", jeong:"무거운 짐 내려놓기.", action:"오늘 하나의 약속을 정중히 거절하라.", q:"내가 ‘과하게’ 짊어진 것은 무엇인가?" },
+  29: { mindset:"위험이 거듭. 진실함으로 통과하라.", stock:"변동성 확대. 손절선 사수, 신규진입 자제.", buddha:"두려움 속의 좌선.", jega:"위기일수록 가족에게 솔직하게.", disciple:"광야의 신실함.", jeong:"강·계곡 가까이 가지 말기.", action:"위험한 일에 솔직히 ‘무섭다’ 말하라.", q:"이 위기를 통과한 후, 나는 어떤 사람이 되어 있을까?" },
+  30: { mindset:"밝음을 이어가라. 사람과 진리를 비추라.", stock:"실적 좋은 종목·우량주. 빛나는 섹터 추적.", buddha:"지혜의 등.", jega:"가정에 따뜻한 불 — 식탁의 촛불 하나.", disciple:"세상의 빛.", jeong:"남쪽(離) 햇빛.", action:"오늘 한 사람을 진심으로 칭찬하라.", q:"내가 비춰야 할 사람은 누구인가?" },
+  31: { mindset:"감응. 마음을 비워야 통한다.", stock:"시장 심리·뉴스에 민감히. 단 추종은 금물.", buddha:"무아(無我)의 감응.", jega:"배우자·연인에게 진심으로.", disciple:"성령의 감동.", jeong:"못과 산이 만나는 자리.", action:"누군가의 손을 잡고 1분 침묵하라.", q:"내가 마음으로 응해야 할 사람은 누구인가?" },
+  32: { mindset:"항구함. 오래 가는 것이 이긴다.", stock:"장기투자 점검. 잦은 매매 금지.", buddha:"꾸준한 정진.", jega:"부부·가족의 ‘오래’ 약속.", disciple:"신실함의 사역.", jeong:"매일 같은 시간, 같은 자리.", action:"오늘 ‘매일 할 일’ 하나를 정하라.", q:"내가 오래 지킬 것은 무엇인가?" },
+  33: { mindset:"물러남의 미덕. 후퇴가 곧 전진.", stock:"부분 현금화. 한 발 빼서 관망.", buddha:"방하착(放下著).", jega:"가족 갈등에서 한 발 물러서기.", disciple:"광야로 물러가심을 본받기.", jeong:"잠시 도시를 떠나라.", action:"오늘 30분 ‘아무것도 안 하기’.", q:"내가 잠시 물러서야 할 자리는 어디인가?" },
+  34: { mindset:"씩씩하되 예(禮)를 잃지 말라.", stock:"강세장. 단 추격매수 자제.", buddha:"정진하되 거칠지 않게.", jega:"기세 좋게 일하되 가족에게 거칠게 말하지 말 것.", disciple:"강한 자가 약한 자를 섬기라.", jeong:"우레의 위, 무리한 일은 피하라.", action:"강하게 말하기 전에 한 번 숨을 고르라.", q:"나의 ‘기세’는 누구를 위한 것인가?" },
+  35: { mindset:"나아감. 밝은 곳으로.", stock:"신고가 종목 추적. 단 분할진입.", buddha:"향상일로(向上一路).", jega:"가족의 미래에 대해 대화.", disciple:"빛을 향해.", jeong:"남쪽·동남쪽으로 한 걸음.", action:"미루던 ‘앞으로 나아가는’ 한 걸음.", q:"내가 오늘 한 걸음 나아갈 방향은 어디인가?" },
+  36: { mindset:"밝음이 상함. 빛을 안으로 감추고 견디라.", stock:"악재 종목 회피. 방어적 운용.", buddha:"광이불요(光而不耀) — 빛나되 드러내지 않음.", jega:"힘든 시기, 가족에게 표내지 말고 견디기.", disciple:"고난의 자리에서 신실함.", jeong:"어둠 속에서도 등불 하나.", action:"힘들어도 미소 한 번.", q:"이 어둠 속에서 내가 지켜야 할 빛은 무엇인가?" },
+  37: { mindset:"가정이 근본. 집안이 바로 서야 천하가 선다.", stock:"가족 단위 재무 점검.", buddha:"부모은중경 한 구절.", jega:"오늘은 가족이 1순위.", disciple:"가정 예배·식탁 기도.", jeong:"집안 청결·꽃·향.", action:"가족과 30분 함께 식사·대화.", q:"내 가정의 ‘바로 서야 할 한 자리’는 어디인가?" },
+  38: { mindset:"어긋남. 다른 가운데 같은 것을 보라.", stock:"의견 분분 종목 피하기.", buddha:"화이부동(和而不同).", jega:"가족과 의견 달라도 끝까지 듣기.", disciple:"다양성 속의 일치.", jeong:"불과 못 — 두 기운 사이에 머물지 말기.", action:"의견 다른 한 사람과 차 한 잔.", q:"나와 다른 그 사람에게서, 같은 점 하나는?" },
+  39: { mindset:"장애·고난. 자기를 돌아보라.", stock:"매매 자제. 손실 회복 무리수 금지.", buddha:"인욕·반성.", jega:"가족에게 책임을 묻지 말고 자기 돌아보기.", disciple:"십자가의 길.", jeong:"산 위에 물 — 험지 피하기.", action:"오늘 ‘내 탓이오’ 한 번 말하라.", q:"이 장애를 통해 내가 배워야 할 것은?" },
+  40: { mindset:"풀림·해방. 묶인 것을 놓아주라.", stock:"악재 해소 종목 주목. 단 환희매수 자제.", buddha:"방하(放下).", jega:"오래된 가족 갈등 풀기.", disciple:"용서·사함.", jeong:"비 갠 뒤의 산책.", action:"오늘 한 사람을 ‘마음으로’ 용서하라.", q:"내가 풀어주어야 할 매듭은 무엇인가?" },
+  41: { mindset:"덜어냄. 작게 살아라.", stock:"비중 축소. 위험자산 비율 축소.", buddha:"소욕지족.", jega:"가계지출 줄이기.", disciple:"청빈의 영성.", jeong:"불필요한 물건 한 가지 버리기.", action:"오늘 한 가지를 ‘덜어내라’.", q:"내 삶에서 줄여야 할 한 가지는?" },
+  42: { mindset:"더함. 선을 옮기고 허물을 고치라.", stock:"우량주 추가 매수 검토.", buddha:"발심·정진.", jega:"가족에게 한 가지 보태주기.", disciple:"기도와 헌신의 증대.", jeong:"바람·우레 — 활기.", action:"한 가지 선한 습관을 더하라.", q:"내가 더해야 할 선(善)은 무엇인가?" },
+  43: { mindset:"결단·터짐. 단 분노로 하지 말라.", stock:"손절·익절 결행.", buddha:"단호하되 자비.", jega:"미루던 결정 단호히.", disciple:"공의의 결단.", jeong:"못 위 하늘 — 비 임박.", action:"미루던 결단 정오 전에.", q:"내가 단호히 결단할 것은?" },
+  44: { mindset:"우연한 만남. 좋고 나쁨 분별하라.", stock:"갑작스런 호재·테마 신중.", buddha:"분별지(分別智).", jega:"낯선 만남에 신중.", disciple:"영분별의 은사.", jeong:"바람 — 변화의 신호.", action:"오늘의 우연을 메모.", q:"오늘의 만남 중 ‘하늘이 보낸’ 사람은?" },
+  45: { mindset:"모임. 큰 일은 모일 때 시작.", stock:"섹터·테마 결집 종목.", buddha:"승가의 힘.", jega:"가족 모임 추진.", disciple:"성도의 교제.", jeong:"모이는 자리·교회.", action:"모임 하나 주선하라.", q:"내가 사람들을 모아야 할 일은 무엇인가?" },
+  46: { mindset:"상승. 작은 것이 쌓여 높이 오른다.", stock:"우량주 추세 추종.", buddha:"점수(漸修).", jega:"가족의 성장 응원.", disciple:"신앙의 성숙.", jeong:"나무가 자라듯.", action:"오늘 한 계단 오르라.", q:"내가 차근차근 오를 사다리는 무엇인가?" },
+  47: { mindset:"곤궁. 말이 많아진다. 침묵하라.", stock:"매매 자제·관망.", buddha:"고(苦) 명상.", jega:"힘들어도 가족 탓하지 말 것.", disciple:"십자가의 자리.", jeong:"마른 못 — 물 길어오기.", action:"오늘 말을 절반으로 줄여라.", q:"이 곤궁 속에서 나는 무엇을 깨닫는가?" },
+  48: { mindset:"우물처럼 깊고 한결같이.", stock:"본질가치 깊은 종목.", buddha:"근본을 깊이.", jega:"가족의 ‘근원’을 묻는 대화.", disciple:"말씀의 깊이.", jeong:"우물·근원 — 본가 방문.", action:"근본을 묻는 질문 한 가지.", q:"내 삶의 ‘우물’은 어디서 길어 올리고 있는가?" },
+  49: { mindset:"혁신. 묵은 것을 바꾸라.", stock:"포트폴리오 재편.", buddha:"낡은 습 버리기.", jega:"가풍의 갱신.", disciple:"새 사람의 사역.", jeong:"못 안의 불 — 변혁의 때.", action:"오늘 ‘새로운 한 가지’ 시도.", q:"내가 바꿔야 할 ‘낡은 한 가지’는?" },
+  50: { mindset:"솥의 자리. 자리를 바르게.", stock:"중장기 우량주 자리 잡기.", buddha:"안주(安住).", jega:"식탁·부엌이 곧 솥.", disciple:"성찬의 자리.", jeong:"부엌·솥 — 화기 관리.", action:"식탁을 정성껏 차려라.", q:"내가 바르게 두어야 할 ‘자리’는?" },
+  51: { mindset:"우레 — 놀람 속에 자기 점검.", stock:"변동성 확대. 손절선 사수.", buddha:"경각심.", jega:"갑작스런 일에 침착.", disciple:"두려움 중 신앙.", jeong:"천둥소리에 자세 바로.", action:"갑작스런 일 앞에 호흡 3번.", q:"이 흔들림이 내게 일러주는 것은?" },
+  52: { mindset:"멈춤. 그치는 자리에 머무르라.", stock:"매매 멈춤. 휴식.", buddha:"지(止)와 관(觀).", jega:"가족과 함께 ‘아무것도 안 하기’.", disciple:"안식.", jeong:"산처럼 묵직히.", action:"오늘 30분 진짜 휴식.", q:"내가 멈춰야 할 자리는 어디인가?" },
+  53: { mindset:"점진. 한 단계씩.", stock:"분할매수·분할매도. 한 번에 다 하지 말기.", buddha:"점수(漸修).", jega:"가족과 ‘한 단계씩’.", disciple:"제자도의 단계적 성장.", jeong:"천천히, 오래.", action:"큰 일을 7단계로 쪼개라.", q:"이 길의 ‘다음 한 걸음’은 무엇인가?" },
+  54: { mindset:"돌아감. 자기 자리를 알라.", stock:"본업·본종목으로.", buddha:"본분사(本分事).", jega:"본가·뿌리 찾기.", disciple:"부르심 확인.", jeong:"고향 한 번 떠올리기.", action:"오늘 ‘내 자리’를 점검하라.", q:"나는 지금 ‘내 자리’에 있는가?" },
+  55: { mindset:"풍요의 정점. 정오의 그늘을 살피라.", stock:"고점 경계·일부 차익실현.", buddha:"무상(無常).", jega:"풍요 속 겸손.", disciple:"감사와 청지기.", jeong:"정점은 곧 내리막의 시작.", action:"가장 빛날 때 한 번 낮춰라.", q:"이 풍요를 누구와 나눌 것인가?" },
+  56: { mindset:"여행자처럼 가볍게.", stock:"단기적 관점·짐 가볍게.", buddha:"무소유의 자유.", jega:"여행자처럼 가족에게 새로움.", disciple:"순례자의 길.", jeong:"길 위의 기운.", action:"평소 안 가던 길로 다녀라.", q:"나는 어디로 가는 여행자인가?" },
+  57: { mindset:"공손함. 바람처럼 부드럽게.", stock:"부드러운 분할 진입.", buddha:"유연한 마음.", jega:"부드러운 말투.", disciple:"성령의 인도.", jeong:"바람 — 부드러운 변화.", action:"강한 말 대신 부드러운 말 3번.", q:"내가 부드러워야 할 자리는?" },
+  58: { mindset:"기쁨. 함께 강습하라.", stock:"호재 종목·시장 호조.", buddha:"법희충만(法喜充滿).", jega:"함께 웃는 자리.", disciple:"교제와 찬양.", jeong:"못 — 즐거운 모임.", action:"오늘 누군가를 웃게 하라.", q:"내 기쁨은 어디서 흘러오는가?" },
+  59: { mindset:"흩어짐. 다시 모으는 지혜.", stock:"분산투자. 위험 분산.", buddha:"산란심을 다시 모으는 좌선.", jega:"흩어진 가족 다시 모으기.", disciple:"흩어진 양 모으심.", jeong:"바람이 물 위 — 흩어짐.", action:"멀어진 한 사람에게 안부.", q:"흩어진 내 마음, 어떻게 다시 모을까?" },
+  60: { mindset:"절제. 매듭을 지으라.", stock:"손절선·익절선 명확히.", buddha:"계율의 매듭.", jega:"가계 절약·시간 절약.", disciple:"절제의 영성.", jeong:"절도 있는 생활.", action:"오늘 한 가지를 ‘끝내라’.", q:"내가 끝맺지 못한 일은 무엇인가?" },
+  61: { mindset:"진실·신실함이 곧 힘.", stock:"신뢰 가능한 종목·기업.", buddha:"진여심(眞如心).", jega:"가족에게 약속 지키기.", disciple:"믿음의 사람.", jeong:"속과 겉 같이.", action:"오늘 약속 하나를 ‘반드시’ 지키라.", q:"나는 누구에게 진실한가?" },
+  62: { mindset:"작게 지나치라. 큰 일은 미루라.", stock:"소액·단기. 큰 베팅 자제.", buddha:"작은 선행.", jega:"작은 관심·돌봄.", disciple:"작은 자에게.", jeong:"낮은 자세.", action:"작은 일에 큰 정성.", q:"내가 ‘작게’ 해야 할 일은 무엇인가?" },
+  63: { mindset:"이미 이루었음. 환란을 미리 막으라.", stock:"이익 실현·리스크 관리.", buddha:"성취 후의 점검.", jega:"이루어진 평화 속의 점검.", disciple:"끝까지 신실함.", jeong:"이룸 뒤의 위기 대비.", action:"성취를 점검하는 글 한 편.", q:"이미 이룬 것 중 흩어지지 않게 지켜야 할 것은?" },
+  64: { mindset:"미완·진행 중. 마지막 한 걸음을 신중히.", stock:"마무리 단계 종목 신중. 새로운 시작 준비.", buddha:"끝없이 정진.", jega:"끝나지 않은 대화 이어가기.", disciple:"순례는 계속된다.", jeong:"강을 건너기 전 마지막 점검.", action:"미완의 일 한 가지에 마지막 한 걸음.", q:"끝나지 않은 그 일을, 나는 어떻게 완성하려 하는가?" }
+};
+
+/* 6~64 풀이 자동 보강 */
+for (let i = 6; i <= 64; i++){
+  const p = PATTERNS[i];
+  if (!p) continue;
+  READING[i-1] = {
+    interp: `『${HEX[i-1][2]}』 ${HEX[i-1][3]} — ${HEX[i-1][4]} 오늘은 이 괘의 뜻을 일상으로 살아내는 데에 깊은 길이 있다.`,
+    verse: getVerse(i),
+    verseExp: `이 말씀이 ${HEX[i-1][1]}의 뜻과 호응한다. 오늘 이 한 구절을 되새겨라.`,
+    mindset: p.mindset,
+    stock: p.stock,
+    buddha: p.buddha,
+    jega: p.jega,
+    disciple: p.disciple,
+    jeong: p.jeong,
+    action: p.action,
+    q: p.q
+  };
+}
+
+function getVerse(i){
+  const verses = [
+    null,null,null,null,null,
+    null,
+    "“화평하게 하는 자는 복이 있나니 그들이 하나님의 아들이라 일컬음을 받을 것임이요” (마태 5:9)",
+    "“너희는 가서 모든 민족을 제자로 삼아…” (마태 28:19)",
+    "“두세 사람이 내 이름으로 모인 곳에는 나도 그들 중에 있느니라” (마태 18:20)",
+    "“지극히 작은 것에 충성된 자는 큰 것에도 충성되고” (누가 16:10)",
+    "“스스로 낮추는 자는 높아지리라” (누가 14:11)",
+    "“범사에 감사하라 이는 그리스도 예수 안에서 너희를 향하신 하나님의 뜻이니라” (살전 5:18)",
+    "“골방에 들어가 문을 닫고 은밀한 중에 계신 네 아버지께 기도하라” (마태 6:6)",
+    "“두세 사람이 내 이름으로 모인 곳에는 나도 그들 중에 있느니라” (마태 18:20)",
+    "“그러므로 누구든지 그리스도 안에 있으면 새로운 피조물이라” (고후 5:17)",
+    "“그러므로 너희가 먹든지 마시든지 무엇을 하든지 다 하나님의 영광을 위하여 하라” (고전 10:31)",
+    "“여호와를 기뻐하라 그가 네 마음의 소원을 네게 이루어 주시리로다” (시편 37:4)",
+    "“나의 양은 내 음성을 들으며 나는 그들을 알며 그들은 나를 따르느니라” (요한 10:27)",
+    "“만일 우리가 우리 죄를 자백하면 그는 미쁘시고 의로우사 우리 죄를 사하시며” (요일 1:9)",
+    "“내가 세상 끝날까지 너희와 항상 함께 있으리라” (마태 28:20)",
+    "“너희가 잠잠하면 잠잠하라 내가 너희에게 모든 것을 가르치리라” (요한 14:26)",
+    "“잠잠한 자가 비방을 받지 아니하나니 너의 분노를 누르라” (시편 37:8)",
+    "“너희 마음에 그리스도를 주로 삼아 거룩하게 하고” (벧전 3:15)",
+    "“내가 세상에서 너희를 택하였은즉…” (요한 15:19)",
+    "“너희는 너희가 받은 부르심을 합당하게 행하라” (엡 4:1)",
+    "“돌이켜 어린아이들과 같이 되지 아니하면…” (마태 18:3)",
+    "“네 보물 있는 그 곳에는 네 마음도 있느니라” (마태 6:21)",
+    "“사람이 떡으로만 살 것이 아니요 하나님의 입으로 나오는 모든 말씀으로 살 것이라” (마태 4:4)",
+    "“너 자신을 살피라” (고후 13:5)",
+    "“내가 너희에게 평안을 끼치노니… 두려워하지 말라” (요한 14:27)",
+    "“나는 세상의 빛이니 나를 따르는 자는 어둠에 다니지 아니하리라” (요한 8:12)",
+    "“우리가 무엇이든지 그의 뜻대로 구하면 들으심이라” (요일 5:14)",
+    "“너희가 내 안에 거하라 나도 너희 안에 거하리라” (요한 15:4)",
+    "“잠시 떨어져 한적한 곳에 가서 쉬어라” (마가 6:31)",
+    "“너희는 외모로 사람을 취하지 말고 공의로 판단하라” (요한 7:24)",
+    "“너희 빛을 사람 앞에 비치게 하여…” (마태 5:16)",
+    "“내가 받는 잔을 너희가 마실 수 있느냐” (마태 20:22)",
+    "“네 집과 네 자녀를 가르치라” (신명 6:7)",
+    "“너희가 다 그리스도 예수 안에서 하나이니라” (갈 3:28)",
+    "“너희가 사람의 죄를 용서하면 너희 천부께서도 너희를 용서하시려니와” (마태 6:14)",
+    "“원수를 사랑하라” (마태 5:44)",
+    "“네 소유를 팔아 가난한 자들에게 주라” (마태 19:21)",
+    "“구하라 그리하면 너희에게 주실 것이요” (마태 7:7)",
+    "“의에 주리고 목마른 자는 복이 있나니” (마태 5:6)",
+    "“보라 내가 새 일을 행하리니” (사 43:19)",
+    "“내가 네게 모이라 하노니” (마태 23:37)",
+    "“하나님의 나라는 침노하는 자의 것이라” (마태 11:12)",
+    "“우는 자들과 함께 울라” (롬 12:15)",
+    "“생수의 강이 흘러나리라” (요한 7:38)",
+    "“보라 내가 만물을 새롭게 하노라” (계 21:5)",
+    "“이는 내 몸이니 너희를 위하여 주는 것이라” (눅 22:19)",
+    "“두려워 말라 내가 너와 함께 함이니라” (사 41:10)",
+    "“수고하고 무거운 짐 진 자들아… 내가 너희를 쉬게 하리라” (마태 11:28)",
+    "“오직 인내로써 너희 영혼을 얻으리라” (눅 21:19)",
+    "“여우도 굴이 있고… 인자는 머리 둘 곳이 없도다” (마태 8:20)",
+    "“내가 풍요와 곤궁의 비결을 배웠노라” (빌 4:12)",
+    "“나는 여기 객이로다” (시 119:19)",
+    "“나는 마음이 온유하고 겸손하니” (마태 11:29)",
+    "“항상 기뻐하라” (살전 5:16)",
+    "“잃은 양을 찾아…” (눅 15:4)",
+    "“범사에 절제하나니” (고전 9:25)",
+    "“진리가 너희를 자유롭게 하리라” (요한 8:32)",
+    "“겨자씨 한 알 만한 믿음이 있으면…” (마태 17:20)",
+    "“다 이루었다” (요한 19:30)",
+    "“푯대를 향하여 좇아가노라” (빌 3:14)"
+  ];
+  return verses[i-1] || "“너희는 먼저 그의 나라와 그의 의를 구하라” (마태 6:33)";
+}
+
+/* ──────────────────────────────────────────
+   날짜 표시
+   ──────────────────────────────────────────*/
+const today = new Date('2026-06-20');
+const yesterday = new Date('2026-06-19');
+const fmt = (d) => `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일 (${'일월화수목금토'[d.getDay()]})`;
+document.getElementById('todayDate').textContent = `오늘 · ${fmt(today)}`;
+document.getElementById('yesterdayDate').textContent = `${fmt(yesterday)} 기준 · 6개 분야의 흐름을 64괘의 결로 읽음`;
+
+/* ──────────────────────────────────────────
+   1) 어제의 정세 6개 카드
+   ──────────────────────────────────────────*/
+const NEWS = [
+  {
+    tag:"국내 정치",
+    text:"여야 협치의 신호가 비쳤다가 다시 평행선. 표면은 다툼이나 물밑 조율은 진행 중. 결국 명분과 실리의 줄다리기.",
+    hex:11, // 지천태가 가물거리다 12 천지비로 가는 경계
+    note:"䷊ 지천태가 12 천지비(否)로 흔들리는 형국 — 통(通)과 막힘(否)의 경계, 작은 화해가 큰 흐름을 가른다."
+  },
+  {
+    tag:"경제 이슈",
+    text:"고금리·고환율의 압박 속에 내수는 위축, 그러나 첨단산업·반도체는 다시 길을 트는 조짐. 인내가 곧 자본.",
+    hex:5,
+    note:"䷄ 수천수 — 구름은 모였으나 비는 아직. 기다림으로 안의 힘을 기르라."
+  },
+  {
+    tag:"국내 주가",
+    text:"대형주는 견조, 중소형주는 거센 변동성. 외국인 수급은 미세하게 회복.",
+    hex:9,
+    note:"䷈ 풍천소축 — 작은 축적의 흐름. 큰 한 방보다 분할의 미학."
+  },
+  {
+    tag:"국제 정세",
+    text:"중동·동아시아의 긴장은 이어지나, 외교 회담의 결의가 흘러나옴. 큰 충돌은 자제, 그러나 깊은 의심은 남음.",
+    hex:6,
+    note:"䷅ 천수송 — 다툼의 결, 화해로 끌려야 길하다."
+  },
+  {
+    tag:"국제 주식",
+    text:"미국 빅테크는 호조를 이어가나 유럽·신흥국은 분화. AI·인프라 테마가 흐름의 중심.",
+    hex:14,
+    note:"䷍ 화천대유 — 큰 소유의 시절, 그러나 ‘악을 막고 선을 드러내는’ 분별이 핵심."
+  },
+  {
+    tag:"민심·사회",
+    text:"불안과 피로 속에서도 작은 연대가 곳곳에서 일어남. 어두운 가운데 등불.",
+    hex:36,
+    note:"䷣ 지화명이 — 빛을 안으로 감추고 신실히 살아내는 시절."
+  }
+];
+
+const newsGrid = document.getElementById('newsGrid');
+NEWS.forEach(n => {
+  const card = document.createElement('div');
+  card.className = 'news-card';
+  card.innerHTML = `
+    <div class="tag">${n.tag}</div>
+    <div class="trigrams">${HEX[n.hex-1][0]}</div>
+    <p class="small">${n.text}</p>
+    <div class="hex-mini">${n.note}</div>
+  `;
+  newsGrid.appendChild(card);
+});
+
+/* ──────────────────────────────────────────
+   2) 64괘 격자 + 클릭
+   ──────────────────────────────────────────*/
+const grid = document.getElementById('grid64');
+HEX.forEach((h, idx) => {
+  const cell = document.createElement('div');
+  cell.className = 'hex-cell';
+  cell.dataset.idx = idx;
+  cell.innerHTML = `
+    <div class="num">${idx+1}</div>
+    <div class="sym">${h[0]}</div>
+    <div class="nm">${h[1]}</div>
+  `;
+  cell.addEventListener('click', () => selectHex(idx));
+  grid.appendChild(cell);
+});
+
+function selectHex(idx){
+  document.querySelectorAll('.hex-cell').forEach(c => c.classList.remove('active'));
+  grid.children[idx].classList.add('active');
+
+  const h = HEX[idx];
+  const r = READING[idx];
+  document.getElementById('emptyHint').style.display = 'none';
+  document.getElementById('hexDetail').classList.add('show');
+  document.getElementById('jeongSection').style.display = 'block';
+  document.getElementById('dailyQBox').style.display = 'block';
+
+  document.getElementById('hexHead').innerHTML = `
+    <div class="lg-sym">${h[0]}</div>
+    <div class="meta">
+      <div class="num">제 ${idx+1} 괘</div>
+      <div class="nm">${h[1]}</div>
+      <div class="ch">${h[2]} · ${h[3]}</div>
+      <div class="kw">${h[4]}</div>
+    </div>
+  `;
+  document.getElementById('hexInterp').textContent = r.interp;
+  document.getElementById('hexVerse').textContent = r.verse;
+  document.getElementById('hexVerseExp').textContent = r.verseExp;
+  document.getElementById('hexMindset').textContent = r.mindset;
+  document.getElementById('hexStock').textContent = r.stock;
+  document.getElementById('hexBuddha').textContent = r.buddha;
+  document.getElementById('hexJega').textContent = r.jega;
+  document.getElementById('hexDisciple').textContent = r.disciple;
+  document.getElementById('hexJeong').textContent = r.jeong;
+  document.getElementById('hexAction').textContent = r.action;
+  document.getElementById('dailyQ').textContent = r.q;
+
+  document.getElementById('hexDetail').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ──────────────────────────────────────────
+   Claude 스타일 입력창 — 보냈을 때 랜덤 괘 추천
+   ──────────────────────────────────────────*/
+const ta = document.getElementById('userPrompt');
+const ciMeta = document.getElementById('ciMeta');
+const ciStatus = document.getElementById('ciStatus');
+const STORAGE_KEY = 'iching_diary_v1';
+const DRAFT_KEY = 'iching_diary_draft_v1';
+const CURRENT_KEY = 'iching_diary_current_v1';
+
+let currentEditId = null;   // 편집 중인 일기 id (없으면 null = 새 일기)
+let lastHexIdx = null;      // 마지막으로 선택된 괘 (저장 시 함께 기록)
+
+function autoSize(){
+  ta.style.height = 'auto';
+  ta.style.height = Math.min(ta.scrollHeight, 220) + 'px';
+}
+function updateMeta(){
+  const len = ta.value.length;
+  const editing = currentEditId ? ' · 편집 중' : ' · 새 일기';
+  ciMeta.textContent = `${len}자${editing}`;
+}
+function flashStatus(msg){
+  ciStatus.textContent = msg;
+  ciStatus.classList.add('show');
+  clearTimeout(flashStatus._t);
+  flashStatus._t = setTimeout(() => ciStatus.classList.remove('show'), 1800);
+}
+
+/* ── localStorage ─────────────── */
+function loadDiaries(){
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+  catch(e){ return []; }
+}
+function saveDiaries(list){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+}
+function saveDraft(){
+  localStorage.setItem(DRAFT_KEY, ta.value);
+  localStorage.setItem(CURRENT_KEY, currentEditId || '');
+}
+
+/* ── 저장 ─────────────────────── */
+function saveCurrent(){
+  const text = ta.value.trim();
+  if (!text){
+    flashStatus('내용을 입력하세요');
+    ta.focus();
+    return;
+  }
+  const list = loadDiaries();
+  const now = new Date().toISOString();
+  if (currentEditId){
+    const idx = list.findIndex(d => d.id === currentEditId);
+    if (idx >= 0){
+      list[idx].text = text;
+      list[idx].updatedAt = now;
+      if (lastHexIdx !== null) list[idx].hex = lastHexIdx;
+    }
+    flashStatus('수정 저장됨');
+  } else {
+    const id = 'd_' + Date.now() + '_' + Math.random().toString(36).slice(2,7);
+    list.unshift({
+      id,
+      text,
+      createdAt: now,
+      updatedAt: now,
+      hex: lastHexIdx
+    });
+    currentEditId = id;
+    flashStatus('일기 저장됨');
+  }
+  saveDiaries(list);
+  localStorage.removeItem(DRAFT_KEY);
+  renderDiaryList();
+  updateMeta();
+}
+
+/* ── 새로 쓰기 ────────────────── */
+function newEntry(){
+  if (ta.value.trim() && !currentEditId){
+    if (!confirm('저장하지 않은 내용이 있습니다. 새로 시작할까요?')) return;
+  }
+  ta.value = '';
+  currentEditId = null;
+  lastHexIdx = null;
+  localStorage.removeItem(DRAFT_KEY);
+  localStorage.removeItem(CURRENT_KEY);
+  autoSize();
+  updateMeta();
+  ta.focus();
+  flashStatus('새 일기 시작');
+}
+
+/* ── 일기 불러오기 ────────────── */
+function loadEntry(id){
+  const list = loadDiaries();
+  const d = list.find(x => x.id === id);
+  if (!d) return;
+  ta.value = d.text;
+  currentEditId = d.id;
+  autoSize();
+  updateMeta();
+  flashStatus('일기 불러옴');
+  if (typeof d.hex === 'number'){
+    lastHexIdx = d.hex;
+    selectHex(d.hex);
+  }
+  ta.focus();
+}
+
+/* ── 일기 삭제 ────────────────── */
+function deleteEntry(id, e){
+  if (e) e.stopPropagation();
+  if (!confirm('이 일기를 삭제할까요?')) return;
+  const list = loadDiaries().filter(d => d.id !== id);
+  saveDiaries(list);
+  if (currentEditId === id){
+    currentEditId = null;
+    ta.value = '';
+    autoSize();
+    updateMeta();
+  }
+  renderDiaryList();
+  flashStatus('삭제됨');
+}
+
+/* ── 목록 렌더 ────────────────── */
+function fmtDate(iso){
+  const d = new Date(iso);
+  const p = n => String(n).padStart(2,'0');
+  return `${d.getFullYear()}.${p(d.getMonth()+1)}.${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+function renderDiaryList(){
+  const list = loadDiaries();
+  const items = document.getElementById('diaryItems');
+  document.getElementById('diaryCount').textContent = list.length;
+  document.getElementById('listCountBadge').textContent = list.length ? `(${list.length})` : '';
+  items.innerHTML = '';
+  if (list.length === 0){
+    items.innerHTML = '<div style="padding:18px;text-align:center;color:var(--muted);font-size:12px;">아직 저장된 일기가 없습니다.</div>';
+    return;
+  }
+  list.forEach(d => {
+    const row = document.createElement('div');
+    row.className = 'diary-item';
+    const hexLabel = (typeof d.hex === 'number')
+      ? `${HEX[d.hex][0]} ${HEX[d.hex][1]}`
+      : '';
+    row.innerHTML = `
+      <div>
+        <div class="body">${escapeHtml(d.text)}</div>
+      </div>
+      <div class="right">
+        <div class="date">${fmtDate(d.updatedAt || d.createdAt)}</div>
+        ${hexLabel ? `<div class="hex">${hexLabel}</div>` : ''}
+        <button class="del" data-id="${d.id}">삭제</button>
+      </div>
+    `;
+    row.addEventListener('click', () => loadEntry(d.id));
+    row.querySelector('.del').addEventListener('click', (e) => deleteEntry(d.id, e));
+    items.appendChild(row);
+  });
+}
+function escapeHtml(s){
+  return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+}
+
+/* ── 이벤트 바인딩 ────────────── */
+ta.addEventListener('input', () => {
+  autoSize();
+  updateMeta();
+  saveDraft();
+});
+document.getElementById('saveBtn').addEventListener('click', saveCurrent);
+document.getElementById('newBtn').addEventListener('click', newEntry);
+document.getElementById('clearAllBtn').addEventListener('click', () => {
+  if (!confirm('저장된 모든 일기를 삭제할까요? 되돌릴 수 없습니다.')) return;
+  saveDiaries([]);
+  currentEditId = null;
+  renderDiaryList();
+  flashStatus('전체 삭제 완료');
+});
+document.getElementById('toggleListBtn').addEventListener('click', () => {
+  document.getElementById('diaryList').classList.toggle('show');
+});
+
+document.getElementById('sendBtn').addEventListener('click', () => {
+  const v = ta.value.trim();
+  if (!v) {
+    ta.focus();
+    return;
+  }
+  let sum = 0;
+  for (const c of v) sum += c.charCodeAt(0);
+  const idx = sum % 64;
+  lastHexIdx = idx;
+  selectHex(idx);
+});
+ta.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)){
+    e.preventDefault();
+    document.getElementById('sendBtn').click();
+  } else if (e.key === 's' && (e.ctrlKey || e.metaKey)){
+    e.preventDefault();
+    saveCurrent();
+  }
+});
+
+/* selectHex 호출 시 lastHexIdx 갱신용 래핑 */
+const _origSelectHex = selectHex;
+selectHex = function(idx){
+  lastHexIdx = idx;
+  _origSelectHex(idx);
+};
+
+/* ── 초기 로드 ────────────────── */
+(function init(){
+  const draft = localStorage.getItem(DRAFT_KEY);
+  const cur = localStorage.getItem(CURRENT_KEY);
+  if (draft){
+    ta.value = draft;
+    currentEditId = cur || null;
+    autoSize();
+  }
+  updateMeta();
+  renderDiaryList();
+})();
+</script>
+</body>
+</html>
