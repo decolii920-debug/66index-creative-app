@@ -456,6 +456,7 @@
   </footer>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 /* ──────────────────────────────────────────
    64괘 데이터 — 이름·괘상·키워드 + 풀이 데이터
@@ -876,6 +877,15 @@ const ciStatus = document.getElementById('ciStatus');
 const STORAGE_KEY = 'iching_diary_v1';
 const DRAFT_KEY = 'iching_diary_draft_v1';
 const CURRENT_KEY = 'iching_diary_current_v1';
+const MIGRATED_KEY = 'iching_diary_migrated_to_supabase_v1';
+
+/* ── Supabase 클라이언트 ─────────── */
+const SUPABASE_URL = 'https://jushsdtdaiwfjzunnfuz.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_4Cwo_w6uLsHUgt5MewufBg_7IE-FlvL';
+const TABLE_NAME = 'index_items_64';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let diariesCache = [];   // 메모리 캐시 (Supabase에서 1회 로드 후 로컬 변경 동기화)
 
 let currentEditId = null;   // 편집 중인 일기 id (없으면 null = 새 일기)
 let lastHexIdx = null;      // 마지막으로 선택된 괘 (저장 시 함께 기록)
@@ -896,53 +906,126 @@ function flashStatus(msg){
   flashStatus._t = setTimeout(() => ciStatus.classList.remove('show'), 1800);
 }
 
-/* ── localStorage ─────────────── */
-function loadDiaries(){
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
-  catch(e){ return []; }
+/* ── Supabase 데이터 액세스 ────── */
+function rowToDiary(r){
+  return {
+    id: r.id,
+    text: r.text,
+    hex: (r.hex === null || r.hex === undefined) ? null : Number(r.hex),
+    createdAt: r.created_at,
+    updatedAt: r.updated_at,
+  };
 }
-function saveDiaries(list){
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+async function fetchDiariesFromCloud(){
+  const { data, error } = await sb
+    .from(TABLE_NAME)
+    .select('*')
+    .order('updated_at', { ascending: false });
+  if (error){
+    console.error('[supabase] fetch failed', error);
+    flashStatus('불러오기 실패 — 콘솔 확인');
+    return [];
+  }
+  return (data || []).map(rowToDiary);
 }
+async function upsertDiaryToCloud(d){
+  const payload = {
+    id: d.id,
+    text: d.text,
+    hex: (d.hex === null || d.hex === undefined) ? null : d.hex,
+    created_at: d.createdAt,
+    updated_at: d.updatedAt,
+  };
+  const { error } = await sb.from(TABLE_NAME).upsert(payload);
+  if (error){
+    console.error('[supabase] upsert failed', error);
+    flashStatus('저장 실패 — 콘솔 확인');
+    return false;
+  }
+  return true;
+}
+async function deleteDiaryFromCloud(id){
+  const { error } = await sb.from(TABLE_NAME).delete().eq('id', id);
+  if (error){
+    console.error('[supabase] delete failed', error);
+    flashStatus('삭제 실패 — 콘솔 확인');
+    return false;
+  }
+  return true;
+}
+async function deleteAllDiariesFromCloud(){
+  const { error } = await sb.from(TABLE_NAME).delete().not('id', 'is', null);
+  if (error){
+    console.error('[supabase] delete all failed', error);
+    flashStatus('전체 삭제 실패 — 콘솔 확인');
+    return false;
+  }
+  return true;
+}
+
+/* ── 로컬→Supabase 일회성 마이그레이션 ── */
+async function migrateLocalToCloudIfNeeded(){
+  if (localStorage.getItem(MIGRATED_KEY)) return;
+  let local = [];
+  try { local = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+  catch(e){ local = []; }
+  if (local.length){
+    const payload = local.map(d => ({
+      id: d.id,
+      text: d.text,
+      hex: (d.hex === null || d.hex === undefined) ? null : d.hex,
+      created_at: d.createdAt || new Date().toISOString(),
+      updated_at: d.updatedAt || d.createdAt || new Date().toISOString(),
+    }));
+    const { error } = await sb.from(TABLE_NAME).upsert(payload);
+    if (error){
+      console.error('[supabase] migration failed', error);
+      return; // 마이그레이션 표시 안 하고 다음 로드에서 재시도
+    }
+  }
+  localStorage.setItem(MIGRATED_KEY, '1');
+}
+
 function saveDraft(){
   localStorage.setItem(DRAFT_KEY, ta.value);
   localStorage.setItem(CURRENT_KEY, currentEditId || '');
 }
 
 /* ── 저장 ─────────────────────── */
-function saveCurrent(){
+async function saveCurrent(){
   const text = ta.value.trim();
   if (!text){
     flashStatus('내용을 입력하세요');
     ta.focus();
     return;
   }
-  const list = loadDiaries();
   const now = new Date().toISOString();
+  let row;
   if (currentEditId){
-    const idx = list.findIndex(d => d.id === currentEditId);
-    if (idx >= 0){
-      list[idx].text = text;
-      list[idx].updatedAt = now;
-      if (lastHexIdx !== null) list[idx].hex = lastHexIdx;
+    const idx = diariesCache.findIndex(d => d.id === currentEditId);
+    if (idx < 0){
+      flashStatus('수정 대상이 없습니다');
+      return;
     }
-    flashStatus('수정 저장됨');
+    diariesCache[idx].text = text;
+    diariesCache[idx].updatedAt = now;
+    if (lastHexIdx !== null) diariesCache[idx].hex = lastHexIdx;
+    row = diariesCache[idx];
+    flashStatus('저장 중…');
   } else {
     const id = 'd_' + Date.now() + '_' + Math.random().toString(36).slice(2,7);
-    list.unshift({
-      id,
-      text,
-      createdAt: now,
-      updatedAt: now,
-      hex: lastHexIdx
-    });
+    row = { id, text, createdAt: now, updatedAt: now, hex: lastHexIdx };
+    diariesCache.unshift(row);
     currentEditId = id;
-    flashStatus('일기 저장됨');
+    flashStatus('저장 중…');
   }
-  saveDiaries(list);
-  localStorage.removeItem(DRAFT_KEY);
   renderDiaryList();
   updateMeta();
+  const ok = await upsertDiaryToCloud(row);
+  if (ok){
+    localStorage.removeItem(DRAFT_KEY);
+    flashStatus('일기 저장됨');
+  }
 }
 
 /* ── 새로 쓰기 ────────────────── */
@@ -963,8 +1046,7 @@ function newEntry(){
 
 /* ── 일기 불러오기 ────────────── */
 function loadEntry(id){
-  const list = loadDiaries();
-  const d = list.find(x => x.id === id);
+  const d = diariesCache.find(x => x.id === id);
   if (!d) return;
   ta.value = d.text;
   currentEditId = d.id;
@@ -979,11 +1061,10 @@ function loadEntry(id){
 }
 
 /* ── 일기 삭제 ────────────────── */
-function deleteEntry(id, e){
+async function deleteEntry(id, e){
   if (e) e.stopPropagation();
   if (!confirm('이 일기를 삭제할까요?')) return;
-  const list = loadDiaries().filter(d => d.id !== id);
-  saveDiaries(list);
+  diariesCache = diariesCache.filter(d => d.id !== id);
   if (currentEditId === id){
     currentEditId = null;
     ta.value = '';
@@ -991,7 +1072,9 @@ function deleteEntry(id, e){
     updateMeta();
   }
   renderDiaryList();
-  flashStatus('삭제됨');
+  flashStatus('삭제 중…');
+  const ok = await deleteDiaryFromCloud(id);
+  if (ok) flashStatus('삭제됨');
 }
 
 /* ── 목록 렌더 ────────────────── */
@@ -1001,7 +1084,7 @@ function fmtDate(iso){
   return `${d.getFullYear()}.${p(d.getMonth()+1)}.${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
 }
 function renderDiaryList(){
-  const list = loadDiaries();
+  const list = diariesCache;
   const items = document.getElementById('diaryItems');
   document.getElementById('diaryCount').textContent = list.length;
   document.getElementById('listCountBadge').textContent = list.length ? `(${list.length})` : '';
@@ -1043,12 +1126,14 @@ ta.addEventListener('input', () => {
 });
 document.getElementById('saveBtn').addEventListener('click', saveCurrent);
 document.getElementById('newBtn').addEventListener('click', newEntry);
-document.getElementById('clearAllBtn').addEventListener('click', () => {
+document.getElementById('clearAllBtn').addEventListener('click', async () => {
   if (!confirm('저장된 모든 일기를 삭제할까요? 되돌릴 수 없습니다.')) return;
-  saveDiaries([]);
+  diariesCache = [];
   currentEditId = null;
   renderDiaryList();
-  flashStatus('전체 삭제 완료');
+  flashStatus('전체 삭제 중…');
+  const ok = await deleteAllDiariesFromCloud();
+  if (ok) flashStatus('전체 삭제 완료');
 });
 document.getElementById('toggleListBtn').addEventListener('click', () => {
   document.getElementById('diaryList').classList.toggle('show');
@@ -1084,7 +1169,7 @@ selectHex = function(idx){
 };
 
 /* ── 초기 로드 ────────────────── */
-(function init(){
+(async function init(){
   const draft = localStorage.getItem(DRAFT_KEY);
   const cur = localStorage.getItem(CURRENT_KEY);
   if (draft){
@@ -1094,6 +1179,14 @@ selectHex = function(idx){
   }
   updateMeta();
   renderDiaryList();
+  try {
+    await migrateLocalToCloudIfNeeded();
+    diariesCache = await fetchDiariesFromCloud();
+    renderDiaryList();
+  } catch(e){
+    console.error('[supabase] init failed', e);
+    flashStatus('Supabase 연결 실패 — 콘솔 확인');
+  }
 })();
 </script>
 </body>
