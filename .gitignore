@@ -1,0 +1,9 @@
+node_modules/
+.claude/
+.playwright-mcp/
+_screenshot_*.png
+_after_*.png
+*.zip
+*.pptx
+.DS_Store
+Thumbs.db

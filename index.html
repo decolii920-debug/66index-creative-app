@@ -338,15 +338,206 @@
     text-align:center; color: var(--muted); font-size: 11px;
     margin-top: 40px; letter-spacing: .15em;
   }
+
+  /* ── 로그인 게이트 ─────────────────────── */
+  .login-gate{
+    position: fixed; inset: 0;
+    background: radial-gradient(ellipse at top, #2a2825 0%, #1a1917 70%);
+    display:flex; align-items:center; justify-content:center;
+    z-index: 9999;
+    padding: 20px;
+  }
+  .login-gate.hide{ display:none; }
+  .login-box{
+    background: var(--panel);
+    border: 1px solid var(--border-soft);
+    border-radius: 20px;
+    padding: 40px 36px;
+    width: 100%; max-width: 380px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.5);
+    text-align: center;
+  }
+  .login-logo{
+    font-size: 38px; letter-spacing: .25em;
+    background: linear-gradient(135deg, var(--accent-soft), var(--gold));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+  }
+  .login-title{
+    font-size: 14px; color: var(--text-dim);
+    letter-spacing: .15em; margin-bottom: 26px;
+  }
+  .login-sub{
+    font-size: 11px; color: var(--muted);
+    margin-bottom: 22px; line-height: 1.7;
+    letter-spacing: .04em;
+  }
+  .login-input{
+    width: 100%;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+    text-align: center;
+    letter-spacing: .08em;
+    margin-bottom: 14px;
+    outline: none;
+    transition: border-color .15s ease;
+  }
+  .login-input:focus{ border-color: var(--accent); }
+  .login-btn{
+    width: 100%;
+    background: linear-gradient(135deg, var(--accent), #c46748);
+    color: #fff; border: 0;
+    border-radius: 12px;
+    padding: 13px 16px;
+    font-family: inherit;
+    font-size: 14px; font-weight: 600;
+    letter-spacing: .1em;
+    cursor: pointer;
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .login-btn:hover{
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(217,119,87,.3);
+  }
+  .login-err{
+    color: var(--accent-soft); font-size: 11px;
+    margin-top: 10px; min-height: 14px;
+    letter-spacing: .04em;
+  }
+
+  /* ── 헤더 환영/카운트 ──────────────────── */
+  .welcome-bar{
+    display:flex; justify-content:center; gap: 10px;
+    flex-wrap: wrap; margin-top: 10px;
+  }
+  .wb-chip{
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 5px 12px;
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: .08em;
+    display:inline-flex; align-items:center; gap:6px;
+  }
+  .wb-chip strong{ color: var(--gold); font-weight: 600; }
+  .wb-chip .logout{
+    background: transparent; border: 0; color: var(--muted);
+    cursor: pointer; font-size: 11px; font-family: inherit;
+    padding: 0; margin-left: 4px;
+  }
+  .wb-chip .logout:hover{ color: var(--accent); }
+
+  /* ── 흔들기 버튼 + 오늘의 일진괘 ─────── */
+  .shake-bar{
+    display:flex; align-items:center; justify-content:space-between;
+    gap: 12px; flex-wrap: wrap;
+    margin: 12px 0 14px;
+  }
+  .shake-btn{
+    background: linear-gradient(135deg, var(--accent), var(--gold));
+    color: #1f1e1c; border: 0;
+    border-radius: 12px;
+    padding: 11px 22px;
+    font-family: inherit;
+    font-size: 14px; font-weight: 700;
+    letter-spacing: .1em;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(217,119,87,.25);
+    transition: transform .15s ease;
+  }
+  .shake-btn:hover{ transform: translateY(-2px); }
+  .shake-btn:active{ transform: translateY(0); }
+  .shake-hint{
+    font-size: 12px; color: var(--text-dim);
+    letter-spacing: .04em;
+  }
+  @keyframes shake-anim {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-4px) rotate(-1deg); }
+    40% { transform: translateX(4px) rotate(1deg); }
+    60% { transform: translateX(-3px) rotate(-.5deg); }
+    80% { transform: translateX(3px) rotate(.5deg); }
+  }
+  .grid64.shaking .hex-cell{
+    animation: shake-anim .35s ease;
+  }
+  .today-fortune{
+    background: linear-gradient(135deg, rgba(212,175,55,.10), rgba(217,119,87,.06));
+    border: 1px solid var(--gold);
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin-bottom: 16px;
+    display: none;
+  }
+  .today-fortune.show{ display: block; }
+  .tf-head{
+    display:flex; align-items:center; gap: 14px;
+    margin-bottom: 12px; padding-bottom: 12px;
+    border-bottom: 1px dashed var(--border-soft);
+  }
+  .tf-head .sym{ font-size: 36px; color: var(--gold); line-height: 1; }
+  .tf-head .meta{ flex: 1; }
+  .tf-head .label{ font-size: 11px; color: var(--accent-soft); letter-spacing: .2em; }
+  .tf-head .nm{ font-size: 20px; color: var(--text); font-weight: 600; margin: 2px 0; }
+  .tf-head .ch{ font-size: 12px; color: var(--text-dim); }
+  .tf-grid{
+    display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+  }
+  .tf-item{
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+  }
+  .tf-item .k{ font-size: 10px; color: var(--muted); letter-spacing: .12em; margin-bottom: 4px; }
+  .tf-item .v{ font-size: 13px; color: var(--gold); font-weight: 500; }
+  .tf-msg{
+    margin-top: 12px; font-size: 13px; color: var(--text);
+    line-height: 1.75;
+    padding: 10px 12px;
+    background: rgba(0,0,0,.15);
+    border-radius: 8px;
+    border-left: 3px solid var(--accent);
+  }
 </style>
 </head>
 <body>
-<div class="wrap">
+
+<!-- 로그인 게이트 -->
+<div class="login-gate" id="loginGate">
+  <div class="login-box">
+    <div class="login-logo">六十四卦</div>
+    <div class="login-title">오늘의 64괘 — 입문</div>
+    <div class="login-sub">
+      마음을 가다듬고 닉네임을 적어주세요.<br/>
+      이름은 이 기기에만 저장되며, 다음 방문에서 자동 인사드립니다.
+    </div>
+    <input class="login-input" id="loginNick" placeholder="닉네임 (2~12자)" maxlength="12" autocomplete="off" />
+    <button class="login-btn" id="loginBtn">入 · 입장하기</button>
+    <div class="login-err" id="loginErr"></div>
+  </div>
+</div>
+
+<div class="wrap" id="appWrap" style="display:none;">
 
   <header>
     <div class="ttl">오늘의 64괘 — 정감록·예수제자의 길</div>
     <div class="sub">동서 융합 일진 · 주역으로 읽는 세상과 마음</div>
     <div class="date" id="todayDate"></div>
+    <div class="welcome-bar">
+      <div class="wb-chip">환영합니다, <strong id="welcomeNick">—</strong>
+        <button class="logout" id="logoutBtn" title="로그아웃">⎋ 로그아웃</button>
+      </div>
+      <div class="wb-chip">누적 접속 <strong id="visitCount">0</strong>회</div>
+      <div class="wb-chip">오늘 접속 <strong id="visitToday">0</strong>회</div>
+    </div>
   </header>
 
   <!-- Claude 스타일 입력창 -->
@@ -385,8 +576,35 @@
 
   <!-- 2. 64괘 선택 -->
   <section>
-    <h2>2. 오늘의 일진괘 — 64괘 중 하나를 직접 선택</h2>
-    <p class="small">마음을 가다듬고, 끌리는 괘 하나를 손가락으로 짚어보세요. 우연 속에 길이 열립니다.</p>
+    <h2>2. 오늘의 일진괘 — 흔들어 뽑거나, 직접 짚거나</h2>
+    <p class="small">마음을 가다듬고, 끌리는 괘 하나를 손가락으로 짚거나, 흔들기 버튼으로 무작위로 뽑아보세요. 우연 속에 길이 열립니다.</p>
+
+    <div class="shake-bar">
+      <button class="shake-btn" id="shakeBtn">🎲 오늘의 일진괘 흔들기</button>
+      <span class="shake-hint" id="shakeHint">버튼을 누르면 64괘가 무작위로 재배열되고 한 괘가 뽑힙니다.</span>
+    </div>
+
+    <!-- 오늘의 일반 운세 (일기 분석과 별도) -->
+    <div class="today-fortune" id="todayFortune">
+      <div class="tf-head">
+        <div class="sym" id="tfSym"></div>
+        <div class="meta">
+          <div class="label">오늘의 일반 운세 — 일기와 무관한 순수 괘풀이</div>
+          <div class="nm" id="tfNm"></div>
+          <div class="ch" id="tfCh"></div>
+        </div>
+      </div>
+      <div class="tf-grid">
+        <div class="tf-item"><div class="k">총운</div><div class="v" id="tfLuck"></div></div>
+        <div class="tf-item"><div class="k">길흉</div><div class="v" id="tfGil"></div></div>
+        <div class="tf-item"><div class="k">행운 방위</div><div class="v" id="tfDir"></div></div>
+        <div class="tf-item"><div class="k">행운 색</div><div class="v" id="tfColor"></div></div>
+        <div class="tf-item"><div class="k">행운 숫자</div><div class="v" id="tfNum"></div></div>
+        <div class="tf-item"><div class="k">주의 시간</div><div class="v" id="tfTime"></div></div>
+      </div>
+      <div class="tf-msg" id="tfMsg"></div>
+    </div>
+
     <div class="grid64" id="grid64"></div>
     <div class="hint" id="emptyHint">↑ 위에서 괘를 하나 선택하면 오늘의 풀이가 펼쳐집니다.</div>
 
@@ -753,68 +971,153 @@ function getVerse(i){
 }
 
 /* ──────────────────────────────────────────
-   날짜 표시
+   날짜 표시 (실시간 today / 어제)
    ──────────────────────────────────────────*/
-const today = new Date('2026-06-20');
-const yesterday = new Date('2026-06-19');
+const today = new Date();
+const yesterday = new Date(today.getTime() - 24*60*60*1000);
 const fmt = (d) => `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일 (${'일월화수목금토'[d.getDay()]})`;
+const dateKey = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 document.getElementById('todayDate').textContent = `오늘 · ${fmt(today)}`;
-document.getElementById('yesterdayDate').textContent = `${fmt(yesterday)} 기준 · 6개 분야의 흐름을 64괘의 결로 읽음`;
+document.getElementById('yesterdayDate').textContent = `${fmt(yesterday)} 기준 · 대외정세·대내정세·국내주식·국외경향·민심사회 5개 분야`;
 
 /* ──────────────────────────────────────────
-   1) 어제의 정세 6개 카드
+   날짜 시드 기반 결정적 난수
    ──────────────────────────────────────────*/
-const NEWS = [
-  {
-    tag:"국내 정치",
-    text:"여야 협치의 신호가 비쳤다가 다시 평행선. 표면은 다툼이나 물밑 조율은 진행 중. 결국 명분과 실리의 줄다리기.",
-    hex:11, // 지천태가 가물거리다 12 천지비로 가는 경계
-    note:"䷊ 지천태가 12 천지비(否)로 흔들리는 형국 — 통(通)과 막힘(否)의 경계, 작은 화해가 큰 흐름을 가른다."
-  },
-  {
-    tag:"경제 이슈",
-    text:"고금리·고환율의 압박 속에 내수는 위축, 그러나 첨단산업·반도체는 다시 길을 트는 조짐. 인내가 곧 자본.",
-    hex:5,
-    note:"䷄ 수천수 — 구름은 모였으나 비는 아직. 기다림으로 안의 힘을 기르라."
-  },
-  {
-    tag:"국내 주가",
-    text:"대형주는 견조, 중소형주는 거센 변동성. 외국인 수급은 미세하게 회복.",
-    hex:9,
-    note:"䷈ 풍천소축 — 작은 축적의 흐름. 큰 한 방보다 분할의 미학."
-  },
-  {
-    tag:"국제 정세",
-    text:"중동·동아시아의 긴장은 이어지나, 외교 회담의 결의가 흘러나옴. 큰 충돌은 자제, 그러나 깊은 의심은 남음.",
-    hex:6,
-    note:"䷅ 천수송 — 다툼의 결, 화해로 끌려야 길하다."
-  },
-  {
-    tag:"국제 주식",
-    text:"미국 빅테크는 호조를 이어가나 유럽·신흥국은 분화. AI·인프라 테마가 흐름의 중심.",
-    hex:14,
-    note:"䷍ 화천대유 — 큰 소유의 시절, 그러나 ‘악을 막고 선을 드러내는’ 분별이 핵심."
-  },
-  {
-    tag:"민심·사회",
-    text:"불안과 피로 속에서도 작은 연대가 곳곳에서 일어남. 어두운 가운데 등불.",
-    hex:36,
-    note:"䷣ 지화명이 — 빛을 안으로 감추고 신실히 살아내는 시절."
+function seedFromDate(d, salt = 0){
+  // YYYYMMDD를 32bit 해시로
+  const s = `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}|${salt}`;
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++){
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 16777619);
   }
-];
+  return (h >>> 0);
+}
+function mulberry32(a){
+  return function(){
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function pick(arr, rng){ return arr[Math.floor(rng() * arr.length)]; }
+
+/* ──────────────────────────────────────────
+   1) 어제의 정세 5개 분야 (날짜 시드 모의 데이터)
+   ──────────────────────────────────────────*/
+const NEWS_POOL = {
+  "대외정세": {
+    hexes: [6, 13, 8, 44, 38, 40, 49, 31, 11, 12],
+    texts: [
+      "미·중 무역 줄다리기가 다시 수면 위로. 표면은 강경이나 물밑 채널은 살아 있음.",
+      "중동·동아시아 긴장 속 외교 회담이 활기. 큰 충돌은 자제하나 의심은 남음.",
+      "유럽 안보 협의체가 결속 신호. 동맹의 결이 다시 단단해지는 흐름.",
+      "신흥국 환율 압박. 자본 흐름이 안전자산 쪽으로 일시적 이동.",
+      "북한·러시아 변수 재부각. 한반도 주변국의 외교 카드가 분주.",
+      "기후·에너지 협상에서 작은 합의. 큰 그림은 미해결, 그러나 길은 열림.",
+      "AI 규제·반도체 통제의 새 라운드. 강대국 간 기술 패권 줄다리기.",
+      "G20 의장국 의제 조율. 협력의 명분 위에서 각자의 셈법.",
+      "남미·아프리카 신흥 동맹 부각. 다극화의 결이 더 또렷해짐.",
+      "국제기구의 중재 시도가 이어짐. 인내의 외교가 빛나는 국면."
+    ]
+  },
+  "대내정세": {
+    hexes: [11, 12, 7, 17, 18, 24, 37, 47, 21, 60],
+    texts: [
+      "여야 협치의 신호가 잠시 비쳤다 다시 평행선. 명분과 실리의 줄다리기.",
+      "국정 운영 지지율 횡보. 정책 드라이브 vs 야권 견제의 균형점 찾기.",
+      "지방 정부와 중앙의 협력 채널이 분주. 민생 현안이 우선순위로.",
+      "공직 사회 인사 개편의 신호. 자리 정돈 후 새 동력 모색.",
+      "감사·사정 정국이 부분 활성화. 절제된 칼끝 위에서 정치권 긴장.",
+      "사회 안전망 의제가 다시 부상. 복지 vs 재정 건전성의 오랜 논쟁.",
+      "교육·청년 정책 토론회 활기. 작은 합의가 큰 흐름의 단초.",
+      "지방 선거 정국 모드 진입 조짐. 각 진영의 셈법이 빨라짐.",
+      "법안 통과율 점검. 미루어둔 입법 청구서가 차곡차곡.",
+      "행정 디지털화 가속. 효율과 보안의 균형이 화두."
+    ]
+  },
+  "국내주식경향": {
+    hexes: [9, 5, 14, 26, 46, 23, 28, 34, 55, 63],
+    texts: [
+      "코스피 대형주는 견조, 코스닥 중소형주는 변동성 확대. 외국인 수급 미세 회복.",
+      "반도체·2차전지 순환매. 실적 모멘텀 보유 종목에 매수세 집중.",
+      "AI·로봇 테마 재점화. 단 단기 과열 구간, 분할 접근 권고.",
+      "방어주·고배당주에 자금 일부 회귀. 변동성 헤지 수요.",
+      "바이오·헬스케어 모멘텀 회복 조짐. 임상 일정 모니터링 필요.",
+      "조선·기계·인프라 수주 모멘텀. 중장기 추세 형성 중.",
+      "엔터·콘텐츠 종목 일부 변동성 확대. 글로벌 흥행 결과에 민감.",
+      "금융주는 금리 방향성 따라 분화. 은행·증권 차별화.",
+      "원·달러 환율 변동에 따른 수출주·내수주 희비. 환헤지 전략 점검.",
+      "프로그램 매매 비중 확대 구간. 옵션 만기 영향 유의."
+    ]
+  },
+  "국외경향": {
+    hexes: [14, 30, 11, 26, 43, 5, 28, 55, 9, 16],
+    texts: [
+      "미국 빅테크는 호조 지속. AI 인프라·클라우드 매출 성장이 견인.",
+      "유럽 증시는 분화. 독일·프랑스 강세, 주변국은 정체.",
+      "일본 증시 사상 최고가권 재시도. 엔화 약세가 수출주 뒷받침.",
+      "중국 본토·홍콩 증시 정책 기대감으로 반등 시도. 부동산 변수 상존.",
+      "신흥국 증시 자금 유입 회복 신호. 인도·베트남·인니 주목.",
+      "원유·금 등 원자재 가격 변동 확대. 지정학 리스크에 민감.",
+      "글로벌 채권 금리 안정세. 위험자산 선호 일부 복귀.",
+      "미국 연준 금리 경로에 시장 시선 집중. 다음 회의 점도표 주목.",
+      "ESG·기후 관련 종목 재평가. 그린 에너지 정책 재가속.",
+      "암호자산 변동성 확대. 비트코인 ETF 자금 흐름 모니터링."
+    ]
+  },
+  "민심사회": {
+    hexes: [36, 15, 45, 58, 20, 41, 27, 16, 59, 61],
+    texts: [
+      "불안과 피로 속에서도 작은 연대가 곳곳에서. 어두운 가운데 등불.",
+      "물가·전세 부담에 대한 한숨. 그러나 가계의 절제 지혜 또한 단단.",
+      "지역 공동체·종교·자원봉사 모임이 재활성화. 모임이 곧 회복.",
+      "MZ세대의 새로운 소비·라이프스타일 트렌드. 가치 소비 부상.",
+      "고령화·돌봄 의제가 일상 대화로. 가족·세대 간 대화의 필요.",
+      "교육·입시 피로감 누적. 그러나 작은 변화의 시도가 곳곳에서.",
+      "건강·웰빙·운동 관심 지속 상승. 마음건강도 함께 주목.",
+      "축제·공연·여행 수요 회복. 일상의 기쁨이 사회의 활력으로.",
+      "흩어진 가족·친구를 다시 잇는 작은 모임 늘어남. 따스한 회복의 결.",
+      "신뢰·진실에 대한 갈망 커짐. 가짜뉴스 피로감, 검증 문화 확산."
+    ]
+  }
+};
+
+function buildNewsFor(date){
+  const out = [];
+  let salt = 0;
+  for (const [tag, pool] of Object.entries(NEWS_POOL)){
+    const rng = mulberry32(seedFromDate(date, salt++));
+    const text = pick(pool.texts, rng);
+    const hex = pick(pool.hexes, rng);
+    const h = HEX[hex-1];
+    out.push({
+      tag,
+      text,
+      hex,
+      note: `${h[0]} ${h[1]} — ${h[3]}. ${h[4]}`
+    });
+  }
+  return out;
+}
 
 const newsGrid = document.getElementById('newsGrid');
-NEWS.forEach(n => {
-  const card = document.createElement('div');
-  card.className = 'news-card';
-  card.innerHTML = `
-    <div class="tag">${n.tag}</div>
-    <div class="trigrams">${HEX[n.hex-1][0]}</div>
-    <p class="small">${n.text}</p>
-    <div class="hex-mini">${n.note}</div>
-  `;
-  newsGrid.appendChild(card);
-});
+function renderNews(){
+  newsGrid.innerHTML = '';
+  buildNewsFor(yesterday).forEach(n => {
+    const card = document.createElement('div');
+    card.className = 'news-card';
+    card.innerHTML = `
+      <div class="tag">${n.tag}</div>
+      <div class="trigrams">${HEX[n.hex-1][0]}</div>
+      <p class="small">${n.text}</p>
+      <div class="hex-mini">${n.note}</div>
+    `;
+    newsGrid.appendChild(card);
+  });
+}
+renderNews();
 
 /* ──────────────────────────────────────────
    2) 64괘 격자 + 클릭
@@ -1168,7 +1471,147 @@ selectHex = function(idx){
   _origSelectHex(idx);
 };
 
-/* ── 초기 로드 ────────────────── */
+/* ──────────────────────────────────────────
+   로그인 게이트 + 접속자 카운트
+   ──────────────────────────────────────────*/
+const USER_KEY = 'iching_user_v1';
+const VISIT_TOTAL_KEY = 'iching_visit_total_v1';
+const VISIT_BY_DATE_KEY = 'iching_visit_by_date_v1';
+const VISIT_LAST_DATE_KEY = 'iching_visit_last_date_v1';
+
+const loginGate = document.getElementById('loginGate');
+const appWrap = document.getElementById('appWrap');
+const loginNick = document.getElementById('loginNick');
+const loginBtn = document.getElementById('loginBtn');
+const loginErr = document.getElementById('loginErr');
+
+function showApp(nick){
+  document.getElementById('welcomeNick').textContent = nick;
+  loginGate.classList.add('hide');
+  appWrap.style.display = 'block';
+  bumpVisitCount();
+  renderShakeBoot();
+}
+function tryLogin(){
+  const v = (loginNick.value || '').trim();
+  if (v.length < 2){
+    loginErr.textContent = '닉네임은 최소 2자 이상이어야 합니다.';
+    loginNick.focus();
+    return;
+  }
+  localStorage.setItem(USER_KEY, JSON.stringify({ nick: v, loginAt: new Date().toISOString() }));
+  showApp(v);
+}
+function doLogout(){
+  if (!confirm('로그아웃 하시겠습니까? (저장된 일기는 그대로 남아 있어요)')) return;
+  localStorage.removeItem(USER_KEY);
+  location.reload();
+}
+loginBtn.addEventListener('click', tryLogin);
+loginNick.addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
+document.getElementById('logoutBtn').addEventListener('click', doLogout);
+
+function bumpVisitCount(){
+  const total = (parseInt(localStorage.getItem(VISIT_TOTAL_KEY) || '0', 10) || 0) + 1;
+  localStorage.setItem(VISIT_TOTAL_KEY, String(total));
+
+  const tk = dateKey(new Date());
+  let byDate = {};
+  try { byDate = JSON.parse(localStorage.getItem(VISIT_BY_DATE_KEY) || '{}'); }
+  catch(e){ byDate = {}; }
+  byDate[tk] = (byDate[tk] || 0) + 1;
+  localStorage.setItem(VISIT_BY_DATE_KEY, JSON.stringify(byDate));
+  localStorage.setItem(VISIT_LAST_DATE_KEY, tk);
+
+  document.getElementById('visitCount').textContent = total;
+  document.getElementById('visitToday').textContent = byDate[tk];
+}
+
+/* ──────────────────────────────────────────
+   오늘의 일진괘 — 흔들기 + 일반 운세 (일기 분석과 별도)
+   ──────────────────────────────────────────*/
+const FORTUNE_DIRS  = ["북동(艮)","동(震)","남동(巽)","남(離)","남서(坤)","서(兌)","북서(乾)","북(坎)","중앙(中)"];
+const FORTUNE_COLORS = ["진청(深靑)","비취옥색","주홍(朱紅)","황금(黃金)","순백(純白)","먹빛(墨)","담록(淡綠)","자주(紫)","주황(朱橙)"];
+const FORTUNE_TIMES  = ["인시(寅)·새벽 3~5시","묘시(卯)·오전 5~7시","사시(巳)·오전 9~11시","오시(午)·오전 11~오후 1시","미시(未)·오후 1~3시","유시(酉)·오후 5~7시","술시(戌)·오후 7~9시","해시(亥)·오후 9~11시"];
+
+function fortuneOf(hexIdx, rng){
+  const h = HEX[hexIdx];
+  // 길흉 — 6대 등급, 결정적이지만 괘 + 날짜 시드로 약간 변동
+  const ranks = ["大吉","吉","小吉","平","小凶","注意"];
+  return {
+    luck:   `${h[3].split('·')[0]}의 기운이 강한 하루`,
+    gil:    ranks[Math.floor(rng()*ranks.length)],
+    dir:    pick(FORTUNE_DIRS, rng),
+    color:  pick(FORTUNE_COLORS, rng),
+    num:    String(1 + Math.floor(rng()*9)),
+    time:   pick(FORTUNE_TIMES, rng),
+    msg:    `${h[4]} — 오늘 이 괘의 결을 따라 살라. 큰 결정은 멀리하고, 작은 정성에 마음을 두라.`
+  };
+}
+
+function renderTodayFortune(hexIdx){
+  const h = HEX[hexIdx];
+  const rng = mulberry32(seedFromDate(today, hexIdx + 1));
+  const f = fortuneOf(hexIdx, rng);
+  document.getElementById('tfSym').textContent  = h[0];
+  document.getElementById('tfNm').textContent   = `제 ${hexIdx+1}괘 · ${h[1]}`;
+  document.getElementById('tfCh').textContent   = `${h[2]} · ${h[3]}`;
+  document.getElementById('tfLuck').textContent = f.luck;
+  document.getElementById('tfGil').textContent  = f.gil;
+  document.getElementById('tfDir').textContent  = f.dir;
+  document.getElementById('tfColor').textContent= f.color;
+  document.getElementById('tfNum').textContent  = f.num;
+  document.getElementById('tfTime').textContent = f.time;
+  document.getElementById('tfMsg').textContent  = f.msg;
+  document.getElementById('todayFortune').classList.add('show');
+}
+
+function shuffleGrid(){
+  const cells = Array.from(grid.children);
+  // Fisher–Yates
+  for (let i = cells.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [cells[i], cells[j]] = [cells[j], cells[i]];
+  }
+  // DOM 순서 교체
+  cells.forEach(c => grid.appendChild(c));
+}
+
+const shakeBtn = document.getElementById('shakeBtn');
+const shakeHint = document.getElementById('shakeHint');
+shakeBtn.addEventListener('click', () => {
+  // 1) 시각적 흔들기
+  grid.classList.add('shaking');
+  shakeHint.textContent = '괘를 흔드는 중…';
+
+  // 2) 무작위 재배열
+  let shuffles = 0;
+  const shuffleTick = setInterval(() => {
+    shuffleGrid();
+    shuffles++;
+    if (shuffles >= 4){
+      clearInterval(shuffleTick);
+      grid.classList.remove('shaking');
+      // 3) 한 괘 뽑기
+      const picked = Math.floor(Math.random() * 64);
+      lastHexIdx = picked;
+      renderTodayFortune(picked);
+      selectHex(picked);
+      // 4) 안내 갱신
+      const h = HEX[picked];
+      shakeHint.textContent = `오늘의 일진괘 — ${h[0]} ${h[1]} (제${picked+1}괘)`;
+    }
+  }, 120);
+});
+
+// 로그인 직후, 오늘 한 번도 흔든 적 없으면 슬쩍 안내
+function renderShakeBoot(){
+  shakeHint.textContent = '오늘 첫 입장이라면 흔들기 버튼을 한 번 눌러보세요.';
+}
+
+/* ──────────────────────────────────────────
+   초기 로드 — 로그인 상태 체크 후 부팅
+   ──────────────────────────────────────────*/
 (async function init(){
   const draft = localStorage.getItem(DRAFT_KEY);
   const cur = localStorage.getItem(CURRENT_KEY);
@@ -1179,6 +1622,17 @@ selectHex = function(idx){
   }
   updateMeta();
   renderDiaryList();
+
+  // 로그인 게이트 처리
+  let saved = null;
+  try { saved = JSON.parse(localStorage.getItem(USER_KEY) || 'null'); } catch(e){ saved = null; }
+  if (saved && saved.nick){
+    showApp(saved.nick);
+  } else {
+    loginNick.focus();
+  }
+
+  // Supabase는 입장과 별개로 백그라운드 로드
   try {
     await migrateLocalToCloudIfNeeded();
     diariesCache = await fetchDiariesFromCloud();
