@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>오늘의 64괘 — 정감록·예수제자의 길</title>
+<title>오늘의 64괘 — 정감록·예수제자의 길 · v2.1</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   :root{
@@ -409,6 +409,189 @@
     margin-top: 10px; min-height: 14px;
     letter-spacing: .04em;
   }
+  .login-tabs{
+    display:flex; gap: 8px; margin-bottom: 16px;
+    background: var(--bg-soft); padding: 4px;
+    border-radius: 10px; border: 1px solid var(--border);
+  }
+  .login-tab{
+    flex: 1; background: transparent; border: 0;
+    color: var(--text-dim); padding: 8px 12px;
+    font-family: inherit; font-size: 12px; cursor: pointer;
+    border-radius: 8px; letter-spacing: .1em;
+    transition: all .15s ease;
+  }
+  .login-tab.active{
+    background: var(--panel-2); color: var(--gold);
+    box-shadow: inset 0 0 0 1px var(--border-soft);
+  }
+  .login-input.hidden{ display:none; }
+  .login-hint{
+    font-size: 10px; color: var(--muted);
+    margin-top: 14px; padding-top: 12px;
+    border-top: 1px dashed var(--border);
+    letter-spacing: .04em; line-height: 1.6;
+  }
+  .login-hint b{ color: var(--gold); }
+
+  /* ── 버전 배지 ─────────────────────────── */
+  .ver-badge{
+    display: inline-block;
+    background: linear-gradient(135deg, var(--accent), var(--gold));
+    color: #1f1e1c; font-size: 10px; font-weight: 700;
+    padding: 2px 8px; border-radius: 999px;
+    letter-spacing: .1em; margin-left: 8px;
+    vertical-align: middle;
+    cursor: pointer;
+  }
+  .ver-badge:hover{ filter: brightness(1.1); }
+  .changelog-panel{
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px; margin-top: 12px;
+    font-size: 12px; color: var(--text-dim);
+    display: none; text-align: left;
+    max-width: 720px; margin-left: auto; margin-right: auto;
+  }
+  .changelog-panel.show{ display: block; }
+  .changelog-panel h4{
+    color: var(--gold); font-size: 13px;
+    margin-bottom: 8px; letter-spacing: .08em;
+  }
+  .changelog-panel ul{ padding-left: 18px; line-height: 1.9; }
+  .changelog-panel li{ color: var(--text); font-size: 12px; }
+  .changelog-panel .ver{ color: var(--accent-soft); font-weight: 600; }
+
+  /* ── 만다라 궤적 ───────────────────────── */
+  .mandala-wrap{
+    display: flex; flex-direction: column;
+    align-items: center; gap: 14px;
+  }
+  .mandala-svg{
+    width: 100%; max-width: 560px;
+    aspect-ratio: 1; height: auto;
+    display: block;
+  }
+  .mandala-legend{
+    display:flex; gap: 14px; flex-wrap: wrap; justify-content:center;
+    font-size: 11px; color: var(--text-dim);
+    letter-spacing: .06em;
+  }
+  .mandala-legend .dot{
+    display:inline-block; width:9px; height:9px;
+    border-radius: 50%; margin-right:5px;
+    vertical-align:middle;
+  }
+  .mandala-empty{
+    text-align:center; color: var(--muted);
+    font-size: 12px; padding: 24px 12px;
+    font-style: italic;
+  }
+  .mandala-stats{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(110px,1fr));
+    gap: 8px; width: 100%; max-width: 560px;
+    margin-top: 8px;
+  }
+  .mandala-stats .st{
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px; text-align:center;
+  }
+  .mandala-stats .st .k{
+    font-size: 10px; color: var(--muted);
+    letter-spacing: .1em; margin-bottom: 3px;
+  }
+  .mandala-stats .st .v{
+    font-size: 15px; color: var(--gold); font-weight: 600;
+  }
+
+  /* ── 관리자 대시보드 ───────────────────── */
+  .admin-panel{
+    background: linear-gradient(135deg, rgba(212,175,55,.08), rgba(217,119,87,.05));
+    border: 1px solid var(--gold);
+    border-radius: 16px;
+    padding: 20px; margin-bottom: 22px;
+  }
+  .admin-panel h2{
+    color: var(--gold); font-size: 18px;
+    margin-bottom: 14px; letter-spacing: .08em;
+  }
+  .admin-users{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px,1fr));
+    gap: 10px; margin-bottom: 16px;
+  }
+  .admin-user{
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: all .15s ease;
+  }
+  .admin-user:hover, .admin-user.active{
+    border-color: var(--accent);
+    background: var(--bg-soft);
+  }
+  .admin-user .nick{
+    color: var(--text); font-weight: 600;
+    font-size: 14px; margin-bottom: 4px;
+  }
+  .admin-user .nick .badge{
+    display:inline-block; margin-left: 6px;
+    background: var(--accent); color: #fff;
+    font-size: 9px; padding: 1px 6px; border-radius: 999px;
+    letter-spacing: .08em; vertical-align: middle;
+  }
+  .admin-user .meta{
+    font-size: 11px; color: var(--text-dim);
+  }
+  .admin-user .del{
+    background: transparent; border: 0; color: var(--muted);
+    cursor: pointer; font-size: 10px; float: right;
+    font-family: inherit;
+  }
+  .admin-user .del:hover{ color: var(--accent); }
+  .admin-diary-list{
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    max-height: 320px; overflow-y: auto;
+  }
+  .admin-diary-list .adi{
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+  }
+  .admin-diary-list .adi:last-child{ border-bottom: 0; }
+  .admin-diary-list .adi .head{
+    display:flex; justify-content: space-between;
+    margin-bottom: 4px;
+  }
+  .admin-diary-list .adi .who{ color: var(--gold); }
+  .admin-diary-list .adi .when{ color: var(--muted); font-size: 10px; }
+  .admin-diary-list .adi .body{
+    color: var(--text); line-height: 1.55;
+  }
+  .admin-diary-list .adi .hex{
+    color: var(--accent-soft); font-size: 11px; margin-top: 4px;
+  }
+  .admin-tools{
+    display:flex; gap:8px; flex-wrap:wrap;
+    margin-bottom: 12px;
+  }
+  .admin-tools button{
+    background: var(--panel-2);
+    border: 1px solid var(--border-soft);
+    color: var(--text-dim);
+    border-radius: 8px; padding: 6px 12px;
+    font-family: inherit; font-size: 11px;
+    cursor: pointer; letter-spacing: .05em;
+  }
+  .admin-tools button:hover{ color: var(--accent); border-color: var(--accent); }
 
   /* ── 헤더 환영/카운트 ──────────────────── */
   .welcome-bar{
@@ -510,35 +693,67 @@
 </head>
 <body>
 
-<!-- 로그인 게이트 -->
+<!-- 로그인 게이트 (v2) -->
 <div class="login-gate" id="loginGate">
   <div class="login-box">
     <div class="login-logo">六十四卦</div>
-    <div class="login-title">오늘의 64괘 — 입문</div>
+    <div class="login-title">오늘의 64괘 — 입문 · v2.0</div>
     <div class="login-sub">
-      마음을 가다듬고 닉네임을 적어주세요.<br/>
-      이름은 이 기기에만 저장되며, 다음 방문에서 자동 인사드립니다.
+      각자의 이름과 비밀번호로 안전하게 입장하세요.<br/>
+      일기와 만다라 궤적은 오직 나만 볼 수 있습니다.
     </div>
-    <input class="login-input" id="loginNick" placeholder="닉네임 (2~12자)" maxlength="12" autocomplete="off" />
-    <button class="login-btn" id="loginBtn">入 · 입장하기</button>
+    <div class="login-tabs">
+      <button class="login-tab active" data-tab="signin" id="tabSignin">로그인</button>
+      <button class="login-tab" data-tab="signup" id="tabSignup">가입하기</button>
+    </div>
+    <input class="login-input" id="loginNick" placeholder="닉네임 (2~12자, 영문/한글)" maxlength="12" autocomplete="username" />
+    <input class="login-input" id="loginPw" type="password" placeholder="비밀번호 (4자 이상)" autocomplete="current-password" />
+    <input class="login-input hidden" id="loginPw2" type="password" placeholder="비밀번호 확인" autocomplete="new-password" />
+    <button class="login-btn" id="loginBtn">入 · 로그인</button>
     <div class="login-err" id="loginErr"></div>
+    <div class="login-hint">
+      최초 관리자 계정 — 닉네임: <b>admin</b> · 최초 로그인 시 비밀번호가 지정됩니다.
+    </div>
   </div>
 </div>
 
 <div class="wrap" id="appWrap" style="display:none;">
 
   <header>
-    <div class="ttl">오늘의 64괘 — 정감록·예수제자의 길</div>
-    <div class="sub">동서 융합 일진 · 주역으로 읽는 세상과 마음</div>
+    <div class="ttl">오늘의 64괘 — 정감록·예수제자의 길<span class="ver-badge" id="verBadge" title="업데이트 내역 보기">v2.1</span></div>
+    <div class="sub">동서 융합 일진 · 주역·노자·장자로 읽는 세상과 마음 · 개인 만다라 궤적</div>
     <div class="date" id="todayDate"></div>
     <div class="welcome-bar">
-      <div class="wb-chip">환영합니다, <strong id="welcomeNick">—</strong>
+      <div class="wb-chip">환영합니다, <strong id="welcomeNick">—</strong><span id="adminMark"></span>
         <button class="logout" id="logoutBtn" title="로그아웃">⎋ 로그아웃</button>
       </div>
+      <div class="wb-chip">내 일기 <strong id="myDiaryCount">0</strong>편</div>
       <div class="wb-chip">누적 접속 <strong id="visitCount">0</strong>회</div>
       <div class="wb-chip">오늘 접속 <strong id="visitToday">0</strong>회</div>
     </div>
+    <div class="changelog-panel" id="changelogPanel">
+      <h4>업데이트 내역</h4>
+      <ul>
+        <li><span class="ver">v2.1</span> — 노자(도덕경)·장자(소요유) 항목 추가. 각 괘마다 두 성인의 결로 오늘을 풀이</li>
+        <li><span class="ver">v2.0</span> — 비밀번호 로그인·회원가입, 개인별 일기 격리, 만다라 궤적 시각화, 관리자 대시보드</li>
+        <li><span class="ver">v1.2</span> — 로그인 게이트·방문자 카운터·흔들기 일진괘·날짜 시드 정세</li>
+        <li><span class="ver">v1.1</span> — Supabase 연동, 일기 클라우드 저장</li>
+        <li><span class="ver">v1.0</span> — 64괘 격자·정감록·예수제자·주식·불교 6대 풀이</li>
+      </ul>
+    </div>
   </header>
+
+  <!-- 관리자 대시보드 (관리자만 표시) -->
+  <div class="admin-panel" id="adminPanel" style="display:none;">
+    <h2>⚙ 관리자 대시보드 — 전체 사용자 및 일기 관리</h2>
+    <div class="admin-tools">
+      <button id="adminReload">🔄 새로고침</button>
+      <button id="adminExport">⬇ JSON 백업</button>
+      <button id="adminAllDiaries">📖 전체 일기 보기</button>
+    </div>
+    <div class="admin-users" id="adminUsers"></div>
+    <div class="admin-diary-list" id="adminDiaryList"></div>
+  </div>
 
   <!-- Claude 스타일 입력창 -->
   <div class="claude-input">
@@ -638,6 +853,18 @@
         <p id="hexBuddha"></p>
       </div>
 
+      <div class="sub-section sky">
+        <h3>노자(老子)의 말 — 도덕경의 결</h3>
+        <div class="verse" id="hexLaozi"></div>
+        <p id="hexLaoziApp"></p>
+      </div>
+
+      <div class="sub-section jade">
+        <h3>장자(莊子)의 말 — 소요유의 결</h3>
+        <div class="verse" id="hexZhuangzi"></div>
+        <p id="hexZhuangziApp"></p>
+      </div>
+
       <div class="sub-section jade">
         <h3>제가(齊家)적 수행법 — 집안과 사람의 도(道)</h3>
         <p id="hexJega"></p>
@@ -663,7 +890,23 @@
     </div>
   </section>
 
-  <!-- 4. 오늘의 철학적 질문 -->
+  <!-- 4. 나의 만다라 궤적 -->
+  <section>
+    <h2>4. 나의 만다라 궤적 — 일기가 그리는 오늘까지의 원</h2>
+    <p class="small" style="margin-bottom:14px;">매일의 일기와 그날 받은 괘가 만다라의 한 자리에 새겨집니다. 시간이 흐를수록 나의 원이 완성됩니다.</p>
+    <div class="mandala-wrap">
+      <svg class="mandala-svg" id="mandalaSvg" viewBox="0 0 600 600"></svg>
+      <div class="mandala-legend">
+        <span><span class="dot" style="background:var(--gold);"></span>일기+괘 기록</span>
+        <span><span class="dot" style="background:var(--accent);"></span>오늘의 자리</span>
+        <span><span class="dot" style="background:var(--jade);box-opacity:.5;"></span>궤적선</span>
+      </div>
+      <div class="mandala-stats" id="mandalaStats"></div>
+      <div class="mandala-empty" id="mandalaEmpty">아직 만다라에 새길 기록이 없습니다. 오늘의 괘를 뽑고 일기를 저장하면 첫 점이 찍힙니다.</div>
+    </div>
+  </section>
+
+  <!-- 5. 오늘의 철학적 질문 -->
   <div class="daily-q" id="dailyQBox" style="display:none;">
     <div class="label">오늘 하루의 철학적 질문</div>
     <div class="q" id="dailyQ"></div>
@@ -756,6 +999,10 @@ const READING = [
     mindset: "쉬지 않되 우쭐대지 않는다. ‘自彊不息(스스로 굳세어 쉬지 않음)’을 새기되, ‘亢龍有悔(높이 오른 용의 후회)’를 거울 삼는다.",
     stock: "상승장의 초입 신호. 대형 우량주·주도주에 집중하고, 분할매수로 추세를 따른다. 단 고점매수는 금물. 익절선을 미리 정해두고 6번째 효(상효)가 오면 욕심을 거두라.",
     buddha: "정진바라밀(精進波羅蜜). 하루 30분 좌선으로 몸을 곧게 세우고 호흡을 길게. 게으름을 적(賊)으로 알고, 그러나 ‘성취감’ 또한 집착으로 두지 말라.",
+    laozi: "「道法自然」 도는 스스로 그러함을 따른다.",
+    laoziApp: "새 일을 시작하되 억지로 밀지 말라. 자연의 결(때·사람·자기 몸)을 살펴 그 흐름 위에 강건함을 얹으라. 자연을 거스른 창조는 오래가지 못한다.",
+    zhuangzi: "「大知閑閑, 小知間間」 큰 앎은 여유롭고, 작은 앎은 조급하다.",
+    zhuangziApp: "시작할수록 여유로운 시선을 잃지 말라. 성급함은 시야를 좁힌다. 오늘의 큰 결단일수록 한 호흡 늦게, 넓게 보고 움직여라.",
     jega: "가장(家長)이 먼저 일어나라. 새벽을 열고, 가족이 일어날 자리를 따뜻하게 데워두는 사람이 집의 하늘이 된다. 잔소리 대신 솔선수범.",
     disciple: "마태 28:19 ‘가서 모든 민족을 제자로 삼아…’ — 오늘은 ‘시작’의 날. 한 사람에게 복음을 나누거나, 한 영혼을 위해 기도하라. 큰 뜻은 작은 발걸음에서 시작된다.",
     jeong: "정감록의 ‘十勝之地’ 가운데 ‘건방(乾方·서북)’의 기운이 강하다. 서북향 책상·창을 잠시 정돈하고, 높은 산을 한 번 바라보라. 하늘 기운이 머리로 들어온다.",
@@ -770,6 +1017,10 @@ const READING = [
     mindset: "‘내가 옳다’ 대신 ‘내가 모자라다’를 먼저 말하라. 침묵·경청·승복이 오늘의 보약. 후덕재물(厚德載物) — 두터운 덕으로 만물을 싣는다.",
     stock: "추세 추종보다 ‘기다림의 매수’. 현금 비중을 늘리고, 이미 보유한 우량주는 ‘덮어두고 묵히는’ 자세. 큰 손이 바닥을 다질 때까지 따라 들어가지 말라.",
     buddha: "보시·인욕바라밀. 작은 보시 하나(밥 한 그릇·자리 양보)와, 한 번의 인욕(참고 넘어감)을 실천하라. 분별 없는 받아들임이 곧 지혜다.",
+    laozi: "「上善若水. 水善利萬物而不爭」 최상의 선은 물과 같아 만물을 이롭게 하되 다투지 않는다.",
+    laoziApp: "오늘은 이기려 하지 말고 흐르라. 낮은 자리, 다투지 않는 자리에 서 있으면 결국 만물이 그 자리로 모여든다. 강함은 부드러움 안에 있다.",
+    zhuangzi: "「虛室生白, 吉祥止止」 빈 방에는 밝음이 나고, 상서로움이 그 자리에 머문다.",
+    zhuangziApp: "채우려 하지 말고 비우라. 말·판단·계획을 오늘 한 겹 덜어내면 그 자리에 저절로 밝음과 좋은 사람이 들어온다.",
     jega: "아내·어머니·여성성의 자리를 존중하라. 가정의 ‘땅’이 되는 사람을 위로하라. 부모님께 말없는 안부를 보내는 날.",
     disciple: "누가 10:39 마리아처럼 ‘발 앞에 앉아 듣는 제자’가 되라. 오늘 말하기 전에 두 번 들어라. 한 사람의 이야기를 다 들어주는 것 자체가 사역이다.",
     jeong: "곤방(坤方·서남)이 길하다. 낮은 곳·평지·강가가 좋다. 욕심을 비우고 낮은 자리에 거하라. 정감록의 ‘피난처는 산이 아니라 사람’ — 좋은 사람 곁에 머물라.",
@@ -784,6 +1035,10 @@ const READING = [
     mindset: "조급함을 거두라. 뿌리가 흙을 뚫는 시간이 필요하다. ‘느린 것이 결국 빠른 것’임을 받아들이는 하루.",
     stock: "신규 진입 금물. 종목 발굴·공부의 시기. 관심종목 리스트를 정리하고, 자금은 분산해 둔다. 변동성에 휘둘려 손절·뇌동매매를 하지 말 것.",
     buddha: "참회와 발원의 좌선. 십념(十念)으로 마음을 가라앉히라. 어려움 그 자체가 도(道)의 입구.",
+    laozi: "「千里之行, 始於足下」 천 리 길도 발밑 한 걸음에서 시작한다.",
+    laoziApp: "막힘 앞에 큰 계획을 접고 오늘의 한 걸음만 정하라. 한 통의 전화, 한 줄의 메모, 한 사람에게 도움 청하기 — 그것이 씨앗이 흙을 뚫는 순간이다.",
+    zhuangzi: "「其安易持, 其未兆易謀」 편안할 때 지키기 쉽고, 조짐 전에 도모하기 쉽다.",
+    zhuangziApp: "지금의 막힘은 조짐의 단계다. 커진 뒤 다투기보다 뿌리가 얕은 지금 바로잡으라. 어려움의 원인을 조용히 응시하라.",
     jega: "가족 일에 ‘덮어놓고 결정’ 말 것. 회의·대화 시간을 갖고, 어른의 조언을 구하라. 어른은 막힘을 푸는 열쇠.",
     disciple: "예수께서 광야 40일을 거치셨듯, 오늘의 막힘은 훈련. 멘토·소그룹·동역자를 찾고, 함께 기도 제목을 나누라.",
     jeong: "북동(艮方) 산기슭이 길지. 막힌 일은 산을 한 번 바라보고 결정하라. 정감록이 말하는 ‘십승지’의 핵심은 ‘난세에 함께 기도할 사람’이 있는 곳.",
@@ -798,6 +1053,10 @@ const READING = [
     mindset: "아는 척하지 말 것. 오늘은 ‘모릅니다, 가르쳐 주세요’가 가장 강한 말. 겸손한 학생의 자세.",
     stock: "초보가 고수의 종목을 따라가는 것 금물. ‘왜 사는지’ 설명할 수 없으면 사지 말라. 차트·재무제표 공부의 날로 삼아라.",
     buddha: "지혜바라밀의 시작은 ‘무지의 자각’. 경전 한 구절을 베껴 쓰고, 한 줄 깨달음을 적어두라.",
+    laozi: "「知不知, 上. 不知知, 病」 모름을 아는 것이 으뜸이요, 모르면서 아는 척함이 병이다.",
+    laoziApp: "오늘 ‘모른다’는 세 글자를 아끼지 말고 써라. 그 인정이 곧 배움의 문. 아는 척은 병이므로 침묵하고 물으라.",
+    zhuangzi: "「吾生也有涯, 而知也無涯」 삶은 유한하나 앎은 무한하다.",
+    zhuangziApp: "다 알려 하지 말라. 오늘은 한 가지만, 깊이 배우라. 얕고 넓은 앎보다 좁고 진실한 앎이 나를 살린다.",
     jega: "자녀·아랫사람을 ‘가르치되 군림하지 말라’. 한 번 가르치고 세 번 기다리는 인내. 부모도 함께 배운다.",
     disciple: "예수의 제자훈련은 ‘질문’으로 시작했다. 좋은 질문 하나가 백 번의 설교보다 낫다. 오늘 누군가에게 좋은 질문을 던지라.",
     jeong: "동북(艮)의 산수(山水) 기운. 책상·서재의 위치를 점검. 정감록의 ‘피난은 책 속에도 있다’ — 책 한 권을 손에 잡으라.",
@@ -812,6 +1071,10 @@ const READING = [
     mindset: "재촉하지 말 것. 잘 먹고 잘 자며 몸을 다스리는 날. 기다림은 게으름이 아니라 ‘준비된 멈춤’.",
     stock: "관망. 호가창을 줄여라. 1~2주 후의 변곡점을 보고 진입할 종목을 미리 정해두되, 오늘은 지켜만 보라.",
     buddha: "선정바라밀. 호흡 한 번에 한 생각을 내려놓고, 30분 좌선. 비는 때가 되면 내린다.",
+    laozi: "「致虛極, 守靜篤」 극도로 비우고 지극히 고요함을 지켜라.",
+    laoziApp: "기다림은 채움의 다른 이름. 안을 극진히 비우고 지극히 고요히 있으면, 때가 되어 비가 저절로 내린다. 오늘은 결정하지 않는 것이 최선의 결정.",
+    zhuangzi: "「安時而處順, 哀樂不能入也」 때에 맞추고 순리에 처하면 슬픔과 기쁨이 들 수 없다.",
+    zhuangziApp: "때가 아직 아니라면 순리 위에 몸을 얹으라. 재촉으로 얻은 것은 놓치고, 순리로 기다린 것은 오래 남는다.",
     jega: "함께 식사하는 날. 음식을 정성껏 준비해 가족과 마주 앉으라. 식탁이 곧 가정의 제단.",
     disciple: "예수께서도 40일을 광야에서, 30년을 침묵의 준비에서. 제자훈련의 큰 부분은 ‘대기’. 묵상·필사·기도로 영혼을 살찌우라.",
     jeong: "감방(坎·북)의 물 기운. 음수(飮水) 관리에 유의. 정감록의 ‘난을 피하려면 먼저 몸을 다스리라’ — 식음을 가지런히 하라.",
@@ -884,10 +1147,139 @@ const PATTERNS = {
   64: { mindset:"미완·진행 중. 마지막 한 걸음을 신중히.", stock:"마무리 단계 종목 신중. 새로운 시작 준비.", buddha:"끝없이 정진.", jega:"끝나지 않은 대화 이어가기.", disciple:"순례는 계속된다.", jeong:"강을 건너기 전 마지막 점검.", action:"미완의 일 한 가지에 마지막 한 걸음.", q:"끝나지 않은 그 일을, 나는 어떻게 완성하려 하는가?" }
 };
 
+/* 노자 도덕경 / 장자 소요유의 결 — 6~64괘 짧은 인용 + 적용 */
+const LAOZI = [
+  null, null, null, null, null,
+  { q:"「夫唯不爭, 故天下莫能與之爭」 오직 다투지 않으니 천하가 그와 다툴 수 없다.", a:"오늘의 다툼은 이겨도 손해. 침묵과 물러섬이 이김의 다른 이름이다." },
+  { q:"「以正治國, 以奇用兵, 以無事取天下」 나라는 정도로, 군사는 기변으로, 천하는 무사로 얻는다.", a:"자기 자리에서 원칙을 지키는 것이 곧 통솔. 함부로 부리기 전에 나부터 다스려라." },
+  { q:"「同於道者, 道亦樂得之」 도와 하나 된 자는 도 또한 반겨 얻는다.", a:"좋은 사람 곁이 곧 도의 자리. 오늘 그 한 사람과의 시간을 아끼지 말라." },
+  { q:"「不自見故明. 不自是故彰」 스스로 드러내지 않으니 밝고, 스스로 옳다 하지 않으니 빛난다.", a:"작은 축적은 자랑 없이. 조용히 쌓이는 것이 결국 오래 간다." },
+  { q:"「行不言之教」 말 없는 가르침을 행한다.", a:"예의는 말이 아니라 걸음. 오늘은 걸음의 방향과 자세를 살펴 위태로움을 피하라." },
+  { q:"「大成若缺, 其用不弊」 크게 이룬 것은 모자란 듯하나 그 쓰임이 다하지 않는다.", a:"평화 속에 방심 대신 겸허. 채워진 자리일수록 한 조각 비워두라." },
+  { q:"「知其雄, 守其雌, 爲天下谿」 수컷을 알되 암컷을 지켜 천하의 시내가 된다.", a:"막힘 앞에 강함으로 밀지 말라. 낮고 부드럽게 흐르면 결국 통한다." },
+  { q:"「聖人不積. 旣以爲人, 己愈有」 성인은 쌓지 않고, 남을 위할수록 자기가 더 있다.", a:"함께함의 가치는 나눌수록 커진다. 오늘 한 사람과 목표를 같이 하라." },
+  { q:"「持而盈之, 不如其已」 가득 채우려 함은 그침만 못하다.", a:"풍요 속에 절제. 가진 것을 자랑 대신 나누면 오래 지킬 수 있다." },
+  { q:"「江海所以能爲百谷王者, 以其善下之」 강해가 온갖 골짜기의 왕이 되는 것은 잘 낮추기 때문이다.", a:"낮음이 곧 높음의 뿌리. 오늘 한 자리 낮추면 내일 한 자리 오른다." },
+  { q:"「知足者富, 强行者有志」 만족을 아는 자가 부자요, 힘써 행하는 자가 뜻을 이룬다.", a:"기쁨은 소유가 아니라 만족에서. 준비된 기쁨이 오래 남는다." },
+  { q:"「柔弱勝剛强」 부드럽고 약한 것이 굳고 강한 것을 이긴다.", a:"오늘은 흐름을 따르는 자가 이긴다. 억지로 방향을 바꾸려 하지 말라." },
+  { q:"「復歸於樸」 소박함으로 돌아가라.", a:"낡은 것을 바로잡는 길은 화려한 개혁이 아니라 근본으로의 회귀." },
+  { q:"「聖人常善救人, 故無棄人」 성인은 사람을 잘 구하니 버려지는 자가 없다.", a:"먼저 다가감이 오늘의 임(臨). 낮은 자를 세우는 손이 크게 쓰인다." },
+  { q:"「不出戶, 知天下」 문 밖을 나가지 않고도 천하를 안다.", a:"관찰은 밖이 아니라 안에서. 마음의 창을 열면 바깥이 저절로 보인다." },
+  { q:"「金玉滿堂, 莫之能守」 금옥이 가득해도 지킬 수 없다.", a:"결단으로 걷어낼 것을 걷어라. 붙잡음이 곧 손실의 시작." },
+  { q:"「大巧若拙, 大辯若訥」 큰 재주는 서툰 듯, 큰 언변은 어눌한 듯.", a:"꾸밈이 본질을 이길 수 없다. 오늘은 화려함 대신 진실 한 조각." },
+  { q:"「損之又損, 以至於無爲」 덜고 또 덜어 무위에 이르라.", a:"깎이는 시기는 잃는 것이 아니라 참 나만 남기는 과정. 저항 대신 순응." },
+  { q:"「反者道之動」 되돌아옴이 도의 움직임이다.", a:"회복의 결. 멀어진 자리에서 본래로 한 걸음 돌아오라." },
+  { q:"「見素抱樸, 少私寡欲」 소박함을 보고 순박을 안으라. 사사로움과 욕심을 줄이라.", a:"진실은 꾸밈의 반대편에. 오늘은 거짓 한 마디를 줄이는 것이 도(道)." },
+  { q:"「重爲輕根, 靜爲躁君」 무거움이 가벼움의 뿌리요, 고요가 조급의 임금이다.", a:"큰 축적은 조급함이 아니라 무거운 고요 위에서. 서둘지 말고 무겁게 쌓으라." },
+  { q:"「爲腹不爲目」 배를 위하고 눈을 위하지 말라.", a:"기름의 도는 절제. 말과 음식은 필요한 만큼, 자랑을 위한 만큼은 덜라." },
+  { q:"「持而盈之, 不如其已」 넘치기 전에 그치라.", a:"큰 지나침은 무너짐의 문. 오늘의 하나를 정중히 거절하는 것이 지혜." },
+  { q:"「天下之至柔, 馳騁天下之至堅」 지극한 부드러움이 지극한 굳음을 뚫는다.", a:"위기 속에는 강함이 아니라 유연함으로. 두려움을 인정한 자가 통과한다." },
+  { q:"「明道若昧, 進道若退」 밝은 도는 어두운 듯, 나아감의 도는 물러섬 같다.", a:"오늘 빛은 안으로 감추고 밖으로 조용하라. 그 밝음이 더 멀리 간다." },
+  { q:"「大音希聲, 大象無形」 큰 소리는 잘 들리지 않고 큰 형상은 형체가 없다.", a:"감응은 말로 하는 것이 아니다. 마음을 비우면 눈빛으로도 통한다." },
+  { q:"「合抱之木, 生於毫末」 아름드리 나무도 작은 싹에서 난다.", a:"오래 감의 힘은 매일의 한 걸음. 오늘 같은 시간, 같은 자리를 지키라." },
+  { q:"「知足不辱, 知止不殆」 만족을 알면 욕되지 않고, 그침을 알면 위태롭지 않다.", a:"물러남은 지혜. 뒤로 한 발 서면 앞이 더 넓게 보인다." },
+  { q:"「勝人者有力, 自勝者强」 남을 이기는 자는 힘있고, 자기를 이기는 자는 강하다.", a:"기세를 남에게 쓰지 말고 자기에게 쓰라. 예(禮) 없는 강함은 무너진다." },
+  { q:"「上士聞道, 勤而行之」 상등의 사람은 도를 들으면 부지런히 행한다.", a:"나아감은 요란이 아니라 매일의 실천. 오늘 미룬 한 걸음을 옮기라." },
+  { q:"「和其光, 同其塵」 빛을 조화롭게 하고 티끌과 함께한다.", a:"어둠 속에서 빛은 안으로 지키라. 밖으로 빛나려 하면 상하고, 안에서 지키면 살아 남는다." },
+  { q:"「治大國, 若烹小鮮」 큰 나라 다스림이 작은 생선 굽는 듯.", a:"가정도 마찬가지. 자꾸 뒤집으면 부서진다. 오늘은 흔들지 말고 그대로 두라." },
+  { q:"「大道甚夷, 而民好徑」 큰 길은 매우 평탄한데 사람은 좁은 길을 좋아한다.", a:"다름 속에서 큰 길을 보라. 지엽적 다툼 대신 근본의 공통을 찾으라." },
+  { q:"「將欲取之, 必固與之」 취하려면 먼저 주라.", a:"장애는 밖이 아니라 안. 원망을 거두고 나를 먼저 돌아보면 길이 열린다." },
+  { q:"「反者道之動, 弱者道之用」 되돌아옴이 도의 움직임, 약함이 도의 쓰임.", a:"풀림의 자리에서 힘을 빼라. 매듭은 힘으로 풀리지 않고 결로 풀린다." },
+  { q:"「爲學日益, 爲道日損」 학문은 나날이 더하고, 도는 나날이 던다.", a:"오늘은 하나를 덜어내는 것이 하나를 얻는 것보다 크다." },
+  { q:"「上善若水」 최상의 선은 물과 같다.", a:"낮은 곳으로 흐르며 만물을 이롭게 함. 오늘 한 가지 선을 더하되 자랑 없이." },
+  { q:"「勇於敢則殺, 勇於不敢則活」 감히 함에 용감하면 죽고, 감히 하지 않음에 용감하면 산다.", a:"결단은 신중히. 분노로 하는 결단은 자신을 벤다." },
+  { q:"「天之道, 損有餘而補不足」 하늘의 도는 남는 것을 덜어 모자란 것을 채운다.", a:"우연한 만남에도 뜻이 있다. 넘치는 자는 덜어 나누고, 모자란 자는 그 나눔을 받는다." },
+  { q:"「天下神器, 不可爲也」 천하는 신묘한 그릇이라 억지로 다룰 수 없다.", a:"모임은 억지로 만들지 말라. 자연스럽게 모여드는 자리가 오래 간다." },
+  { q:"「合抱之木, 生於毫末. 九層之臺, 起於累土」 큰 나무도 작은 싹에서, 구층 누대도 한 삽 흙에서.", a:"상승은 축적. 오늘의 한 계단을 오르는 것이 곧 내일의 정상." },
+  { q:"「大成若缺」 크게 이룬 것은 모자란 듯.", a:"곤궁 속에도 큰 대성이 숨어 있다. 말을 줄이고 목숨으로 뜻을 지키라." },
+  { q:"「淵兮似萬物之宗」 깊구나, 만물의 근원 같도다.", a:"근본을 깊이 파라. 우물은 넓게 파는 것이 아니라 깊게 파는 것." },
+  { q:"「反者道之動」 되돌아옴이 도의 움직임.", a:"혁신은 새것을 만드는 것이 아니라 근원을 회복하는 것." },
+  { q:"「聖人抱一, 爲天下式」 성인은 하나를 안아 천하의 법이 된다.", a:"자리를 바르게. 흔들리지 않는 한 자리가 온 집안을 안정시킨다." },
+  { q:"「豫兮若冬涉川, 猶兮若畏四鄰」 겨울에 내를 건너듯, 사방을 두려워하듯.", a:"놀람 속에는 조심. 서두른 발이 얼음을 깨뜨린다." },
+  { q:"「知者不言, 言者不知」 아는 자는 말하지 않고, 말하는 자는 알지 못한다.", a:"멈춤의 자리에서 말은 필요 없다. 침묵이 곧 그 자리." },
+  { q:"「圖難於其易, 爲大於其細」 어려움은 쉬울 때 도모하고, 큰 일은 작을 때 이룬다.", a:"점진은 조급함의 반대. 큰 일을 오늘의 작은 단계로 쪼개라." },
+  { q:"「知常曰明」 항상됨을 아는 것을 밝음이라 한다.", a:"본래 자리를 잊지 말라. 돌아갈 곳을 아는 자가 멀리 갈 수 있다." },
+  { q:"「持而盈之, 不如其已」 가득 채우려 함은 그침만 못하다.", a:"풍요의 정점에서 한 발 낮추라. 정오의 태양 뒤에는 그림자가 있다." },
+  { q:"「大直若屈, 大巧若拙」 크게 곧은 것은 굽은 듯, 큰 재주는 서툰 듯.", a:"나그네는 유연히. 짐을 줄이고 마음을 가볍게 하면 어디든 갈 수 있다." },
+  { q:"「柔弱處上, 剛强處下」 부드럽고 약한 것이 위에 있고, 굳고 강한 것이 아래에 있다.", a:"공손함이 곧 힘. 부드러운 말 세 마디가 강한 말 한 마디를 이긴다." },
+  { q:"「聖人常無心, 以百姓心爲心」 성인은 늘 자기 마음이 없고, 백성의 마음으로 마음을 삼는다.", a:"기쁨은 나눌수록 커진다. 오늘 한 사람을 웃게 하라." },
+  { q:"「散而不亂, 復歸於一」 흩어져도 어지럽지 않고, 다시 하나로 돌아간다.", a:"흩어진 것들 사이에 하나의 결을 보라. 그 결을 잡으면 다시 모인다." },
+  { q:"「治人事天, 莫若嗇」 사람을 다스리고 하늘을 섬김에는 아낌만 함이 없다.", a:"절제는 인색함이 아니라 정성. 오늘 한 가지를 매듭지어 끝내라." },
+  { q:"「信言不美, 美言不信」 진실한 말은 아름답지 않고, 아름다운 말은 진실하지 않다.", a:"신실함은 꾸미지 않는다. 오늘 약속 하나를 반드시 지키라." },
+  { q:"「爲大於其細, 圖難於其易」 큰 일은 작을 때, 어려움은 쉬울 때 이룬다.", a:"오늘은 작게 지나치는 것이 지혜. 큰 것을 미루고 작은 것에 큰 정성을." },
+  { q:"「其安易持, 其未兆易謀」 편안할 때 지키기 쉽다.", a:"이룸 뒤에 미리 막으라. 성취의 자리는 잃기 쉬운 자리이기도 하다." },
+  { q:"「愼終如始, 則無敗事」 끝을 처음처럼 삼가면 실패가 없다.", a:"마지막 한 걸음이 여정 전체를 결정한다. 오늘도 처음처럼 삼가라." }
+];
+
+const ZHUANGZI = [
+  null, null, null, null, null,
+  { q:"「不譴是非, 以與世俗處」 시비를 가리지 않고 세속과 함께 산다.", a:"오늘의 다툼은 시비를 넘어. ‘옳음’을 접어두면 관계가 남는다." },
+  { q:"「相尊以位, 不以德」 자리로 서로 높이되 덕으로 하라.", a:"통솔은 자리가 아니라 덕. 자기 자리의 책임을 다하면 사람이 따른다." },
+  { q:"「魚相忘乎江湖, 人相忘乎道術」 물고기가 강호를 잊듯, 사람도 도 안에서 서로를 잊는다.", a:"친밀은 매달림이 아니라 자연스러움. 곁에 있어도 자유롭게." },
+  { q:"「不以物挫志」 사물로 뜻을 꺾지 않는다.", a:"작은 것 앞에서 흔들리지 말라. 오늘의 작은 절약이 큰 뜻을 지킨다." },
+  { q:"「行則影從, 止則影止」 걸으면 그림자가 따르고, 멈추면 그림자도 멈춘다.", a:"조심스러운 걸음이 조심스러운 결과를 낳는다. 오늘은 발밑을 보라." },
+  { q:"「天地與我並生, 萬物與我爲一」 천지가 나와 함께 나고, 만물이 나와 하나이다.", a:"태평의 자리에서 감사하라. 하늘·땅과 함께 있음을 자주 잊지 말라." },
+  { q:"「不知說生, 不知惡死」 생을 좋아하지도, 사를 미워하지도 않는다.", a:"막힘도 흐름의 일부. 좋고 나쁨을 붙잡지 않으면 그 자체가 통(通)이다." },
+  { q:"「同乎無知, 其德不離」 앎 없음과 같으니, 덕이 떠나지 않는다.", a:"함께함의 자리에서 자기 앎을 내세우지 말라. 아는 자보다 함께하는 자가 오래 간다." },
+  { q:"「至樂無樂, 至譽無譽」 지극한 즐거움에는 즐거움이 없고, 지극한 명예에는 명예가 없다.", a:"큰 소유는 자랑이 없어야 오래 간다. ‘내 것’이라는 말을 오늘 하루 아끼라." },
+  { q:"「無爲名尸, 無爲謀府」 이름의 시체가 되지 말고, 모략의 창고가 되지 말라.", a:"낮음이 곧 자유. 이름과 계략을 내려놓으면 몸이 가벼워진다." },
+  { q:"「鼓宮宮動, 鼓角角應」 궁을 치면 궁이, 각을 치면 각이 응한다.", a:"기쁨은 부르는 대로 응한다. 오늘 미리 기쁜 소리 하나를 내라." },
+  { q:"「順物之情」 사물의 정을 따르라.", a:"흐름을 거스르지 말라. 오늘은 ‘예’라고 두 번 말하는 것이 도(道)." },
+  { q:"「善養生者, 若牧羊然, 視其後者而鞭之」 삶을 잘 기르는 이는 양을 치듯 뒤처진 것을 챙긴다.", a:"낡은 것을 무시하지 말라. 뒤처진 하나를 정돈하면 전체가 살아난다." },
+  { q:"「大道不稱, 大辯不言」 큰 도는 이름 붙일 수 없고, 큰 변론은 말이 없다.", a:"다가감은 조용히. 큰 마음은 큰 말을 필요로 하지 않는다." },
+  { q:"「聖人之心, 靜乎天地之鑒也」 성인의 마음은 천지의 거울처럼 고요하다.", a:"관찰의 날. 판단을 멈추고 그저 비추라. 그러면 진짜 모습이 드러난다." },
+  { q:"「其嗜欲深者, 其天機淺」 욕망이 깊은 자는 천기가 얕다.", a:"결단으로 욕을 끊으라. 마음의 가시를 빼야 하늘의 문이 열린다." },
+  { q:"「樸素而天下莫能與之爭美」 소박하면 천하가 아름다움을 다툴 수 없다.", a:"진실이 곧 꾸밈. 오늘은 화장 대신 미소 한 겹." },
+  { q:"「知窮之有命, 知通之有時」 곤궁도 명이 있고, 형통도 때가 있다.", a:"깎이는 시기를 받아들이라. 원망은 시간을 늘리고, 수용은 시간을 줄인다." },
+  { q:"「反其本, 復其始」 뿌리로 돌아가고, 처음을 회복하라.", a:"회복은 새길이 아니라 옛길. 잊었던 첫 마음을 오늘 다시 꺼내라." },
+  { q:"「靜而聖, 動而王」 고요하면 성인이요, 움직이면 왕이라.", a:"진실은 고요에서 나온다. 흔들림 없는 자리에서 낸 말이 왕의 말." },
+  { q:"「爲善無近名」 선을 하되 이름 가까이 두지 말라.", a:"조용한 축적. 오늘 한 선행을 자랑 없이 오래 지속하라." },
+  { q:"「食於苟簡之田, 立於不貸之圃」 소박한 밭에서 먹고, 빌리지 않은 뜰에 선다.", a:"자양은 간소함에서. 오늘은 한 끼 소박히, 그러나 정성껏." },
+  { q:"「知足者不以利自累」 만족을 아는 자는 이익에 얽매이지 않는다.", a:"지나침의 경계선은 ‘만족’. 만족을 아는 순간 짐이 가벼워진다." },
+  { q:"「乘物以遊心」 사물을 타고 마음을 노닐게 하라.", a:"위험 위에서도 마음은 자유롭게. 두려움을 붙잡지 말고 흐름 위에 얹으라." },
+  { q:"「至人之用心若鏡, 不將不迎, 應而不藏」 지인의 마음은 거울과 같아, 보내지도 맞지도 않고 응하되 담아두지 않는다.", a:"밝게 비추되 담지 말라. 오늘의 대화는 응하고 흘려 보내라." },
+  { q:"「相濡以沫, 不如相忘於江湖」 물거품으로 서로 적심보다 강호에서 서로를 잊음이 낫다.", a:"감응은 매달림이 아니라 자유. 오늘 한 사람을 놓아주는 것이 곧 사랑." },
+  { q:"「執而不化, 是失其常也」 붙잡고 변하지 않으면 항상됨을 잃는다.", a:"오래 감은 굳음이 아니라 변화 속의 결. 오늘 하나를 새롭게 하라." },
+  { q:"「知其不可奈何, 而安之若命」 어쩔 수 없음을 알고 명처럼 편안히 받아들이라.", a:"물러남은 굴복이 아니라 지혜. 힘을 뺀 자리에서 새 길이 열린다." },
+  { q:"「相與於無相與, 相爲於無相爲」 상관없음 속에서 상관하고, 위함 없이 위한다.", a:"예 없는 기세는 헛것. 강할수록 부드러움 한 겹을 덧대라." },
+  { q:"「進於道者, 日有所忘」 도에 나아가는 자는 날마다 잊는 것이 있다.", a:"앞으로 감은 짐을 지는 것이 아니라 짐을 내려놓는 것." },
+  { q:"「其形化, 其心與之然」 형체가 변하면 마음도 함께 변한다.", a:"어둠 속에서도 마음은 유연히. 상황 따라 자기를 바꾸는 것이 지혜." },
+  { q:"「父子相親, 何爲不慈」 부자가 서로 친하면 어찌 자애롭지 않겠는가.", a:"가정은 근본. 오늘 한 마디의 따뜻함이 온 집을 데운다." },
+  { q:"「和之以是非, 而休乎天鈞」 시비를 조화롭게 하고 하늘의 저울에 쉬라.", a:"다름 속의 균형을 찾으라. 옳고 그름을 넘어선 자리에 참 평화가 있다." },
+  { q:"「知其不可奈何而安之若命, 德之至也」 어쩔 수 없음을 명처럼 받아들이는 것이 덕의 지극함이다.", a:"장애 앞에 남 탓 대신 받아들임. 그 순간이 곧 성장의 문." },
+  { q:"「解衣槃礴, 裸而箕坐」 옷을 풀고 편안히 다리 뻗어 앉으라.", a:"풀림의 자리에서 힘을 완전히 빼라. 매듭은 힘이 빠질 때 저절로 풀린다." },
+  { q:"「其耆欲深者, 其天機淺」 욕이 깊은 자는 천기가 얕다.", a:"덜어냄이 곧 채움. 오늘 한 가지를 자발적으로 내려놓으라." },
+  { q:"「日新之謂盛德」 날마다 새로워짐을 성한 덕이라 한다.", a:"선을 더함은 요란이 아니라 매일의 한 뼘. 오늘도 어제와 다른 한 걸음." },
+  { q:"「大知閑閑, 小知間間」 큰 앎은 여유롭고, 작은 앎은 조급하다.", a:"결단은 여유로운 자리에서. 서두른 결단은 후회를, 여유로운 결단은 확신을 남긴다." },
+  { q:"「相遇於途, 而不相識」 길에서 만나도 서로 알지 못한다.", a:"우연한 만남에도 분별이 필요. 좋은 우연과 나쁜 우연을 조용히 가려라." },
+  { q:"「以無厚入有間」 두께 없음으로 틈에 들어가라.", a:"모임은 억지로 만드는 것이 아니라 결을 따라 흘러 들어가는 것." },
+  { q:"「其升也緜緜」 오름은 면면히 이어진다.", a:"상승은 폭발이 아니라 지속. 오늘 한 계단, 내일도 한 계단." },
+  { q:"「安時處順, 哀樂不能入」 때에 편히 하고 순리에 처하면 슬픔과 기쁨이 들지 않는다.", a:"곤궁 속에서 평정. 감정에 휘둘리기보다 순리 위에 몸을 얹으라." },
+  { q:"「井蛙不可以語於海」 우물 안 개구리에게 바다를 말할 수 없다.", a:"근본을 넓히라. 오늘 새로운 한 세계에 한 걸음 다가가라." },
+  { q:"「大化不足以形其變」 큰 변화는 형체로 그릴 수 없다.", a:"혁신은 계산되지 않는다. 오늘 낡은 하나를 놓아주라, 새것이 저절로 온다." },
+  { q:"「安其所, 樂其業」 자리를 편히 하고 업을 즐긴다.", a:"자리를 바르게 하면 즐거움이 따라 온다. 오늘은 내가 있어야 할 자리에 있는지 살피라." },
+  { q:"「大聲不入里耳」 큰 소리는 마을 귀에 들리지 않는다.", a:"놀람 앞에 침착. 소란을 만들지 말고 조용히 자기를 살피라." },
+  { q:"「休則平易, 平易則恬淡」 쉬면 평이하고, 평이하면 담담하다.", a:"멈춤의 힘. 오늘의 진짜 성취는 아무것도 하지 않는 30분." },
+  { q:"「川之積水而後負大舟」 시내의 물이 쌓여야 큰 배를 띄운다.", a:"점진은 축적. 오늘의 물 한 잔이 내일의 항해를 만든다." },
+  { q:"「魚相造乎水, 人相造乎道」 물고기는 물에서, 사람은 도에서 삶을 이룬다.", a:"본래 자리를 벗어나면 마른다. 나의 물이 어디인지 오늘 확인하라." },
+  { q:"「福輕乎羽, 莫之知載」 복은 깃털보다 가벼우나 실을 줄을 모른다.", a:"풍요는 겸손 위에 얹어야 흘리지 않는다. 정점에서 한 발 낮추라." },
+  { q:"「乘天地之正, 而御六氣之辯」 천지의 바름을 타고 육기의 변화를 몰아라.", a:"나그네의 자유는 결 위에 있음. 억지 없이 흐름 위에 몸을 얹으라." },
+  { q:"「無以人滅天」 사람됨으로 하늘을 없애지 말라.", a:"부드러움은 힘을 이긴다. 오늘은 억지를 놓고 결을 따르라." },
+  { q:"「與人和者, 謂之人樂」 사람과 화합함을 사람의 즐거움이라 한다.", a:"기쁨은 함께에서. 오늘 웃음을 함께 나눌 한 자리를 만들라." },
+  { q:"「氣聚則生, 氣散則死」 기가 모이면 살고, 흩어지면 죽는다.", a:"흩어진 마음·사람·시간을 다시 한 자리로 모으라." },
+  { q:"「無用之用, 是爲大用」 쓸모 없음의 쓸모, 그것이 큰 쓰임이다.", a:"절제는 남김. 다 쓰지 않은 자리에서 큰 쓰임이 나온다." },
+  { q:"「至誠能動天地」 지극한 성심은 천지를 움직인다.", a:"신실은 힘이다. 오늘 하나의 진심이 백 개의 화려한 말을 이긴다." },
+  { q:"「大而無用, 衆所同去」 크되 쓸모 없는 것은 사람들이 함께 버린다.", a:"오늘은 작게 지나치라. 큰 것을 억지로 짊어지지 말고 작은 것에 정성을." },
+  { q:"「安之若命, 德之至也」 명처럼 편안히 받아들임이 덕의 지극함.", a:"이룸 뒤에도 겸허히. 자만은 이룸을 잃게 하는 첫 걸음." },
+  { q:"「小惑易方, 大惑易性」 작은 미혹은 방향을 바꾸고, 큰 미혹은 본성을 바꾼다.", a:"마지막 한 걸음일수록 신중히. 다 온 자리에서 넘어지는 것을 경계하라." }
+];
+
 /* 6~64 풀이 자동 보강 */
 for (let i = 6; i <= 64; i++){
   const p = PATTERNS[i];
   if (!p) continue;
+  const lz = LAOZI[i-1] || { q:"", a:"" };
+  const zz = ZHUANGZI[i-1] || { q:"", a:"" };
   READING[i-1] = {
     interp: `『${HEX[i-1][2]}』 ${HEX[i-1][3]} — ${HEX[i-1][4]} 오늘은 이 괘의 뜻을 일상으로 살아내는 데에 깊은 길이 있다.`,
     verse: getVerse(i),
@@ -895,6 +1287,10 @@ for (let i = 6; i <= 64; i++){
     mindset: p.mindset,
     stock: p.stock,
     buddha: p.buddha,
+    laozi: lz.q,
+    laoziApp: lz.a,
+    zhuangzi: zz.q,
+    zhuangziApp: zz.a,
     jega: p.jega,
     disciple: p.disciple,
     jeong: p.jeong,
@@ -1162,6 +1558,10 @@ function selectHex(idx){
   document.getElementById('hexMindset').textContent = r.mindset;
   document.getElementById('hexStock').textContent = r.stock;
   document.getElementById('hexBuddha').textContent = r.buddha;
+  document.getElementById('hexLaozi').textContent = r.laozi || '';
+  document.getElementById('hexLaoziApp').textContent = r.laoziApp || '';
+  document.getElementById('hexZhuangzi').textContent = r.zhuangzi || '';
+  document.getElementById('hexZhuangziApp').textContent = r.zhuangziApp || '';
   document.getElementById('hexJega').textContent = r.jega;
   document.getElementById('hexDisciple').textContent = r.disciple;
   document.getElementById('hexJeong').textContent = r.jeong;
@@ -1172,26 +1572,30 @@ function selectHex(idx){
 }
 
 /* ──────────────────────────────────────────
-   Claude 스타일 입력창 — 보냈을 때 랜덤 괘 추천
+   v2 데이터 계층 — 사용자 계정·개인 일기·관리자
+   기존 index_items_64 테이블을 재활용:
+     id 프리픽스 'usr:<nick>' → 사용자 계정 (text = JSON 페이로드)
+     id 프리픽스 'dia:<nick>:<date>:<rand>' → 일기 (text = JSON 페이로드, hex = 괘 번호)
    ──────────────────────────────────────────*/
 const ta = document.getElementById('userPrompt');
 const ciMeta = document.getElementById('ciMeta');
 const ciStatus = document.getElementById('ciStatus');
-const STORAGE_KEY = 'iching_diary_v1';
-const DRAFT_KEY = 'iching_diary_draft_v1';
-const CURRENT_KEY = 'iching_diary_current_v1';
-const MIGRATED_KEY = 'iching_diary_migrated_to_supabase_v1';
+const DRAFT_KEY = 'iching_diary_draft_v2';
+const CURRENT_KEY = 'iching_diary_current_v2';
+const SESSION_KEY = 'iching_session_v2';
+const LEGACY_MIGRATED_KEY = 'iching_legacy_migrated_v2';
 
-/* ── Supabase 클라이언트 ─────────── */
 const SUPABASE_URL = 'https://jushsdtdaiwfjzunnfuz.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_4Cwo_w6uLsHUgt5MewufBg_7IE-FlvL';
 const TABLE_NAME = 'index_items_64';
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-let diariesCache = [];   // 메모리 캐시 (Supabase에서 1회 로드 후 로컬 변경 동기화)
-
-let currentEditId = null;   // 편집 중인 일기 id (없으면 null = 새 일기)
-let lastHexIdx = null;      // 마지막으로 선택된 괘 (저장 시 함께 기록)
+let session = null;            // { nick, isAdmin }
+let users = [];                // admin 시점 사용자 목록
+let diariesCache = [];         // 현재 사용자의 일기
+let currentEditId = null;
+let lastHexIdx = null;
+let adminSelectedNick = null;
 
 function autoSize(){
   ta.style.height = 'auto';
@@ -1208,85 +1612,152 @@ function flashStatus(msg){
   clearTimeout(flashStatus._t);
   flashStatus._t = setTimeout(() => ciStatus.classList.remove('show'), 1800);
 }
+function escapeHtml(s){
+  return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+}
+function fmtDate(iso){
+  const d = new Date(iso);
+  const p = n => String(n).padStart(2,'0');
+  return `${d.getFullYear()}.${p(d.getMonth()+1)}.${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+function todayKey(){ return dateKey(new Date()); }
 
-/* ── Supabase 데이터 액세스 ────── */
-function rowToDiary(r){
+/* ── 비밀번호 해시 ─────────────── */
+async function sha256(str){
+  const enc = new TextEncoder().encode(str);
+  const buf = await crypto.subtle.digest('SHA-256', enc);
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+function randSalt(){
+  const b = new Uint8Array(12);
+  crypto.getRandomValues(b);
+  return Array.from(b).map(x => x.toString(16).padStart(2,'0')).join('');
+}
+async function hashPassword(pw, salt){
+  return sha256(salt + '$' + pw + '$hex64$v2');
+}
+const isValidNick = (v) => /^[A-Za-z0-9가-힣_-]{2,12}$/.test(v);
+
+/* ── 사용자 계정 액세스 ────────── */
+function userRowId(nick){ return 'usr:' + nick; }
+
+async function fetchUser(nick){
+  const { data, error } = await sb.from(TABLE_NAME).select('*').eq('id', userRowId(nick)).maybeSingle();
+  if (error){ console.error('[usr] fetch', error); return null; }
+  if (!data) return null;
+  try {
+    const p = JSON.parse(data.text);
+    return (p && p.kind === 'user') ? p : null;
+  } catch { return null; }
+}
+async function fetchAllUsers(){
+  const { data, error } = await sb.from(TABLE_NAME).select('*').like('id', 'usr:%');
+  if (error){ console.error('[usr] all', error); return []; }
+  return (data || []).map(r => {
+    try {
+      const p = JSON.parse(r.text);
+      return (p && p.kind === 'user') ? { ...p, createdAt: r.created_at } : null;
+    } catch { return null; }
+  }).filter(Boolean);
+}
+async function upsertUser(u){
+  const now = new Date().toISOString();
+  const row = {
+    id: userRowId(u.nick),
+    text: JSON.stringify({ ...u, kind: 'user' }),
+    hex: null,
+    created_at: u.createdAt || now,
+    updated_at: now,
+  };
+  const { error } = await sb.from(TABLE_NAME).upsert(row);
+  if (error){ console.error('[usr] upsert', error); return false; }
+  return true;
+}
+async function deleteUserAccount(nick){
+  const { error: e1 } = await sb.from(TABLE_NAME).delete().eq('id', userRowId(nick));
+  const { error: e2 } = await sb.from(TABLE_NAME).delete().like('id', `dia:${nick}:%`);
+  return !e1 && !e2;
+}
+
+/* ── 일기 액세스 (사용자별) ────── */
+function diaryFromRow(r){
+  let p = {};
+  try { p = JSON.parse(r.text); }
+  catch { p = { body: r.text, owner: '(legacy)', entryDate: (r.created_at || '').slice(0,10) }; }
   return {
     id: r.id,
-    text: r.text,
+    owner: p.owner || '(legacy)',
+    body: p.body ?? r.text,
+    entryDate: p.entryDate || (r.created_at || '').slice(0,10),
     hex: (r.hex === null || r.hex === undefined) ? null : Number(r.hex),
     createdAt: r.created_at,
     updatedAt: r.updated_at,
   };
 }
-async function fetchDiariesFromCloud(){
-  const { data, error } = await sb
-    .from(TABLE_NAME)
-    .select('*')
+async function fetchDiariesForUser(nick){
+  const { data, error } = await sb.from(TABLE_NAME)
+    .select('*').like('id', `dia:${nick}:%`)
     .order('updated_at', { ascending: false });
-  if (error){
-    console.error('[supabase] fetch failed', error);
-    flashStatus('불러오기 실패 — 콘솔 확인');
-    return [];
-  }
-  return (data || []).map(rowToDiary);
+  if (error){ console.error('[dia] fetch', error); flashStatus('불러오기 실패'); return []; }
+  return (data || []).map(diaryFromRow);
 }
-async function upsertDiaryToCloud(d){
-  const payload = {
+async function fetchAllDiaries(){
+  const { data, error } = await sb.from(TABLE_NAME)
+    .select('*').like('id', 'dia:%')
+    .order('updated_at', { ascending: false });
+  if (error){ console.error('[dia] all', error); return []; }
+  return (data || []).map(diaryFromRow);
+}
+async function upsertDiary(d){
+  const row = {
     id: d.id,
-    text: d.text,
+    text: JSON.stringify({ kind:'diary', owner: d.owner, body: d.body, entryDate: d.entryDate }),
     hex: (d.hex === null || d.hex === undefined) ? null : d.hex,
     created_at: d.createdAt,
     updated_at: d.updatedAt,
   };
-  const { error } = await sb.from(TABLE_NAME).upsert(payload);
-  if (error){
-    console.error('[supabase] upsert failed', error);
-    flashStatus('저장 실패 — 콘솔 확인');
-    return false;
-  }
+  const { error } = await sb.from(TABLE_NAME).upsert(row);
+  if (error){ console.error('[dia] upsert', error); flashStatus('저장 실패'); return false; }
   return true;
 }
-async function deleteDiaryFromCloud(id){
+async function deleteDiary(id){
   const { error } = await sb.from(TABLE_NAME).delete().eq('id', id);
-  if (error){
-    console.error('[supabase] delete failed', error);
-    flashStatus('삭제 실패 — 콘솔 확인');
-    return false;
-  }
+  if (error){ console.error('[dia] del', error); return false; }
   return true;
 }
-async function deleteAllDiariesFromCloud(){
-  const { error } = await sb.from(TABLE_NAME).delete().not('id', 'is', null);
-  if (error){
-    console.error('[supabase] delete all failed', error);
-    flashStatus('전체 삭제 실패 — 콘솔 확인');
-    return false;
-  }
+async function deleteAllMyDiaries(){
+  if (!session) return false;
+  const { error } = await sb.from(TABLE_NAME).delete().like('id', `dia:${session.nick}:%`);
+  if (error){ console.error('[dia] del all', error); return false; }
   return true;
 }
 
-/* ── 로컬→Supabase 일회성 마이그레이션 ── */
-async function migrateLocalToCloudIfNeeded(){
-  if (localStorage.getItem(MIGRATED_KEY)) return;
-  let local = [];
-  try { local = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
-  catch(e){ local = []; }
-  if (local.length){
-    const payload = local.map(d => ({
-      id: d.id,
-      text: d.text,
-      hex: (d.hex === null || d.hex === undefined) ? null : d.hex,
-      created_at: d.createdAt || new Date().toISOString(),
-      updated_at: d.updatedAt || d.createdAt || new Date().toISOString(),
-    }));
-    const { error } = await sb.from(TABLE_NAME).upsert(payload);
-    if (error){
-      console.error('[supabase] migration failed', error);
-      return; // 마이그레이션 표시 안 하고 다음 로드에서 재시도
+/* ── 레거시 마이그레이션 (관리자 최초 로그인 시) ── */
+async function migrateLegacyToAdminIfNeeded(){
+  if (localStorage.getItem(LEGACY_MIGRATED_KEY)) return;
+  const { data, error } = await sb.from(TABLE_NAME).select('*');
+  if (error){ console.error('[legacy] scan', error); return; }
+  const legacy = (data || []).filter(r => typeof r.id === 'string' && !r.id.includes(':'));
+  const adminNick = session ? session.nick : 'admin';
+  const now = new Date().toISOString();
+  for (const r of legacy){
+    const created = r.created_at || now;
+    const newId = `dia:${adminNick}:${created.slice(0,10)}:${r.id.slice(0,14)}`;
+    const payload = {
+      kind: 'diary',
+      owner: adminNick,
+      body: (typeof r.text === 'string') ? r.text : String(r.text),
+      entryDate: created.slice(0,10),
+    };
+    const { error: eUp } = await sb.from(TABLE_NAME).upsert({
+      id: newId, text: JSON.stringify(payload),
+      hex: r.hex, created_at: created, updated_at: r.updated_at || created,
+    });
+    if (!eUp){
+      await sb.from(TABLE_NAME).delete().eq('id', r.id);
     }
   }
-  localStorage.setItem(MIGRATED_KEY, '1');
+  localStorage.setItem(LEGACY_MIGRATED_KEY, '1');
 }
 
 function saveDraft(){
@@ -1294,44 +1765,40 @@ function saveDraft(){
   localStorage.setItem(CURRENT_KEY, currentEditId || '');
 }
 
-/* ── 저장 ─────────────────────── */
+/* ── 일기 저장 ─────────────── */
 async function saveCurrent(){
+  if (!session){ flashStatus('로그인이 필요합니다'); return; }
   const text = ta.value.trim();
-  if (!text){
-    flashStatus('내용을 입력하세요');
-    ta.focus();
-    return;
-  }
+  if (!text){ flashStatus('내용을 입력하세요'); ta.focus(); return; }
   const now = new Date().toISOString();
-  let row;
+  const nick = session.nick;
+  let d;
   if (currentEditId){
-    const idx = diariesCache.findIndex(d => d.id === currentEditId);
-    if (idx < 0){
-      flashStatus('수정 대상이 없습니다');
-      return;
-    }
-    diariesCache[idx].text = text;
+    const idx = diariesCache.findIndex(x => x.id === currentEditId);
+    if (idx < 0){ flashStatus('수정 대상이 없습니다'); return; }
+    diariesCache[idx].body = text;
     diariesCache[idx].updatedAt = now;
     if (lastHexIdx !== null) diariesCache[idx].hex = lastHexIdx;
-    row = diariesCache[idx];
-    flashStatus('저장 중…');
+    d = diariesCache[idx];
   } else {
-    const id = 'd_' + Date.now() + '_' + Math.random().toString(36).slice(2,7);
-    row = { id, text, createdAt: now, updatedAt: now, hex: lastHexIdx };
-    diariesCache.unshift(row);
+    const rand = Math.random().toString(36).slice(2,7);
+    const id = `dia:${nick}:${todayKey()}:${Date.now()}_${rand}`;
+    d = { id, owner: nick, body: text, entryDate: todayKey(),
+          hex: lastHexIdx, createdAt: now, updatedAt: now };
+    diariesCache.unshift(d);
     currentEditId = id;
-    flashStatus('저장 중…');
   }
   renderDiaryList();
   updateMeta();
-  const ok = await upsertDiaryToCloud(row);
+  renderMandala();
+  flashStatus('저장 중…');
+  const ok = await upsertDiary(d);
   if (ok){
     localStorage.removeItem(DRAFT_KEY);
-    flashStatus('일기 저장됨');
+    flashStatus('일기 저장됨 — 만다라에 새겨짐');
   }
 }
 
-/* ── 새로 쓰기 ────────────────── */
 function newEntry(){
   if (ta.value.trim() && !currentEditId){
     if (!confirm('저장하지 않은 내용이 있습니다. 새로 시작할까요?')) return;
@@ -1347,11 +1814,10 @@ function newEntry(){
   flashStatus('새 일기 시작');
 }
 
-/* ── 일기 불러오기 ────────────── */
 function loadEntry(id){
   const d = diariesCache.find(x => x.id === id);
   if (!d) return;
-  ta.value = d.text;
+  ta.value = d.body;
   currentEditId = d.id;
   autoSize();
   updateMeta();
@@ -1363,7 +1829,6 @@ function loadEntry(id){
   ta.focus();
 }
 
-/* ── 일기 삭제 ────────────────── */
 async function deleteEntry(id, e){
   if (e) e.stopPropagation();
   if (!confirm('이 일기를 삭제할까요?')) return;
@@ -1375,22 +1840,18 @@ async function deleteEntry(id, e){
     updateMeta();
   }
   renderDiaryList();
+  renderMandala();
   flashStatus('삭제 중…');
-  const ok = await deleteDiaryFromCloud(id);
+  const ok = await deleteDiary(id);
   if (ok) flashStatus('삭제됨');
 }
 
-/* ── 목록 렌더 ────────────────── */
-function fmtDate(iso){
-  const d = new Date(iso);
-  const p = n => String(n).padStart(2,'0');
-  return `${d.getFullYear()}.${p(d.getMonth()+1)}.${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
-}
 function renderDiaryList(){
   const list = diariesCache;
   const items = document.getElementById('diaryItems');
   document.getElementById('diaryCount').textContent = list.length;
   document.getElementById('listCountBadge').textContent = list.length ? `(${list.length})` : '';
+  document.getElementById('myDiaryCount').textContent = list.length;
   items.innerHTML = '';
   if (list.length === 0){
     items.innerHTML = '<div style="padding:18px;text-align:center;color:var(--muted);font-size:12px;">아직 저장된 일기가 없습니다.</div>';
@@ -1399,12 +1860,10 @@ function renderDiaryList(){
   list.forEach(d => {
     const row = document.createElement('div');
     row.className = 'diary-item';
-    const hexLabel = (typeof d.hex === 'number')
-      ? `${HEX[d.hex][0]} ${HEX[d.hex][1]}`
-      : '';
+    const hexLabel = (typeof d.hex === 'number') ? `${HEX[d.hex][0]} ${HEX[d.hex][1]}` : '';
     row.innerHTML = `
       <div>
-        <div class="body">${escapeHtml(d.text)}</div>
+        <div class="body">${escapeHtml(d.body)}</div>
       </div>
       <div class="right">
         <div class="date">${fmtDate(d.updatedAt || d.createdAt)}</div>
@@ -1417,37 +1876,196 @@ function renderDiaryList(){
     items.appendChild(row);
   });
 }
-function escapeHtml(s){
-  return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+
+/* ── 만다라 궤적 SVG ─────────── */
+function svgEl(tag, attrs, text){
+  const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  for (const [k,v] of Object.entries(attrs || {})) el.setAttribute(k, v);
+  if (text !== undefined && text !== null) el.textContent = text;
+  return el;
+}
+function renderMandala(){
+  const svg = document.getElementById('mandalaSvg');
+  const empty = document.getElementById('mandalaEmpty');
+  const stats = document.getElementById('mandalaStats');
+  if (!svg) return;
+  svg.innerHTML = '';
+  const points = diariesCache
+    .filter(d => typeof d.hex === 'number' && d.hex >= 0 && d.hex < 64)
+    .slice()
+    .sort((a,b) => new Date(a.createdAt) - new Date(b.createdAt));
+  if (!points.length){
+    empty.style.display = 'block';
+    stats.innerHTML = '';
+    return;
+  }
+  empty.style.display = 'none';
+
+  const cx = 300, cy = 300;
+  const rInner = 90, rSectors = 260;
+  const N = 64;
+
+  for (const r of [rInner, rInner + 55, rInner + 115, rSectors]){
+    svg.appendChild(svgEl('circle', { cx, cy, r,
+      fill:'none', stroke:'rgba(212,175,55,0.10)', 'stroke-width':1 }));
+  }
+  for (let i = 0; i < N; i++){
+    const a = (i / N) * Math.PI * 2 - Math.PI/2;
+    const x1 = cx + Math.cos(a) * rInner;
+    const y1 = cy + Math.sin(a) * rInner;
+    const x2 = cx + Math.cos(a) * rSectors;
+    const y2 = cy + Math.sin(a) * rSectors;
+    const strong = (i % 8 === 0);
+    svg.appendChild(svgEl('line', { x1, y1, x2, y2,
+      stroke: strong ? 'rgba(217,119,87,0.35)' : 'rgba(212,175,55,0.08)',
+      'stroke-width': strong ? 1.2 : 0.6 }));
+  }
+  for (const i of [0,16,32,48]){
+    const a = (i / N) * Math.PI * 2 - Math.PI/2;
+    const x = cx + Math.cos(a) * (rSectors + 14);
+    const y = cy + Math.sin(a) * (rSectors + 14);
+    svg.appendChild(svgEl('text', { x, y,
+      fill:'#a8a294', 'font-size': 10,
+      'text-anchor':'middle', 'dominant-baseline':'middle' }, String(i+1)));
+  }
+  svg.appendChild(svgEl('circle', { cx, cy, r: rInner,
+    fill:'rgba(212,175,55,0.05)', stroke:'rgba(212,175,55,0.25)', 'stroke-width': 1 }));
+  svg.appendChild(svgEl('text', { x: cx, y: cy - 6,
+    fill:'#d4af37', 'font-size': 18, 'text-anchor':'middle', 'letter-spacing': 2 }, '中'));
+  svg.appendChild(svgEl('text', { x: cx, y: cy + 14,
+    fill:'#a8a294', 'font-size': 10, 'text-anchor':'middle' }, session ? session.nick : ''));
+
+  const t0 = new Date(points[0].createdAt).getTime();
+  const tN = new Date(points[points.length-1].createdAt).getTime();
+  const rMin = rInner + 14, rMax = rSectors - 14;
+  const radiusFor = (iso) => {
+    if (tN === t0) return (rMin + rMax) / 2;
+    return rMin + ((new Date(iso).getTime() - t0) / (tN - t0)) * (rMax - rMin);
+  };
+
+  if (points.length >= 2){
+    let path = '';
+    points.forEach((p, i) => {
+      const a = (p.hex / N) * Math.PI * 2 - Math.PI/2;
+      const r = radiusFor(p.createdAt);
+      const x = cx + Math.cos(a) * r;
+      const y = cy + Math.sin(a) * r;
+      path += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + y.toFixed(1) + ' ';
+    });
+    svg.appendChild(svgEl('path', { d: path, fill:'none',
+      stroke:'rgba(107,169,139,0.55)', 'stroke-width': 1.2, 'stroke-dasharray': '3 3' }));
+  }
+
+  const today = todayKey();
+  points.forEach((p) => {
+    const a = (p.hex / N) * Math.PI * 2 - Math.PI/2;
+    const r = radiusFor(p.createdAt);
+    const x = cx + Math.cos(a) * r;
+    const y = cy + Math.sin(a) * r;
+    const isToday = p.entryDate === today;
+    const c = svgEl('circle', {
+      cx: x, cy: y, r: isToday ? 8 : 5,
+      fill: isToday ? '#d97757' : '#d4af37',
+      stroke: '#1f1e1c', 'stroke-width': 1.2
+    });
+    const title = svgEl('title', {}, `${p.entryDate} · ${HEX[p.hex][0]} ${HEX[p.hex][1]}`);
+    c.appendChild(title);
+    svg.appendChild(c);
+  });
+
+  const uniqDates = new Set(points.map(p => p.entryDate)).size;
+  const uniqHex = new Set(points.map(p => p.hex)).size;
+  stats.innerHTML = `
+    <div class="st"><div class="k">기록 점</div><div class="v">${points.length}</div></div>
+    <div class="st"><div class="k">기록 일수</div><div class="v">${uniqDates}일</div></div>
+    <div class="st"><div class="k">뽑은 괘</div><div class="v">${uniqHex} / 64</div></div>
+    <div class="st"><div class="k">시작일</div><div class="v" style="font-size:12px;">${points[0].entryDate}</div></div>
+    <div class="st"><div class="k">최근일</div><div class="v" style="font-size:12px;">${points[points.length-1].entryDate}</div></div>
+  `;
 }
 
-/* ── 이벤트 바인딩 ────────────── */
-ta.addEventListener('input', () => {
-  autoSize();
-  updateMeta();
-  saveDraft();
-});
+/* ── 관리자 대시보드 ─────────── */
+async function loadAdmin(){
+  if (!session || !session.isAdmin) return;
+  const [allUsers, allDiaries] = await Promise.all([fetchAllUsers(), fetchAllDiaries()]);
+  users = allUsers;
+  renderAdminUsers(allDiaries);
+  const listSrc = adminSelectedNick ? allDiaries.filter(d => d.owner === adminSelectedNick) : allDiaries;
+  renderAdminDiaryList(listSrc);
+}
+function renderAdminUsers(allDiaries){
+  const box = document.getElementById('adminUsers');
+  box.innerHTML = '';
+  const counts = {};
+  for (const d of allDiaries) counts[d.owner] = (counts[d.owner] || 0) + 1;
+  users.sort((a,b) => a.nick.localeCompare(b.nick));
+  users.forEach(u => {
+    const card = document.createElement('div');
+    card.className = 'admin-user' + (adminSelectedNick === u.nick ? ' active' : '');
+    card.innerHTML = `
+      <button class="del" title="계정과 일기 모두 삭제">✕</button>
+      <div class="nick">${escapeHtml(u.nick)}${u.isAdmin ? '<span class="badge">ADMIN</span>' : ''}</div>
+      <div class="meta">일기 ${counts[u.nick] || 0}편 · ${(u.createdAt || '').slice(0,10)}</div>
+    `;
+    card.addEventListener('click', () => {
+      adminSelectedNick = u.nick;
+      renderAdminUsers(allDiaries);
+      renderAdminDiaryList(allDiaries.filter(d => d.owner === u.nick));
+    });
+    card.querySelector('.del').addEventListener('click', async (e) => {
+      e.stopPropagation();
+      if (u.nick === session.nick){ alert('현재 로그인한 관리자 계정은 삭제할 수 없습니다.'); return; }
+      if (!confirm(`정말 '${u.nick}' 계정과 모든 일기를 삭제할까요?`)) return;
+      await deleteUserAccount(u.nick);
+      adminSelectedNick = null;
+      await loadAdmin();
+    });
+    box.appendChild(card);
+  });
+}
+function renderAdminDiaryList(list){
+  const box = document.getElementById('adminDiaryList');
+  box.innerHTML = '';
+  if (!list.length){
+    box.innerHTML = '<div style="padding:16px;text-align:center;color:var(--muted);font-size:12px;">표시할 일기가 없습니다.</div>';
+    return;
+  }
+  list.slice(0, 200).forEach(d => {
+    const item = document.createElement('div');
+    item.className = 'adi';
+    const hexLabel = (typeof d.hex === 'number') ? `${HEX[d.hex][0]} ${HEX[d.hex][1]}` : '';
+    item.innerHTML = `
+      <div class="head">
+        <span class="who">${escapeHtml(d.owner)}</span>
+        <span class="when">${fmtDate(d.updatedAt || d.createdAt)}</span>
+      </div>
+      <div class="body">${escapeHtml(d.body)}</div>
+      ${hexLabel ? `<div class="hex">${hexLabel} · ${d.entryDate}</div>` : ''}
+    `;
+    box.appendChild(item);
+  });
+}
+
+/* ── 이벤트 바인딩 (일기 패널) ── */
+ta.addEventListener('input', () => { autoSize(); updateMeta(); saveDraft(); });
 document.getElementById('saveBtn').addEventListener('click', saveCurrent);
 document.getElementById('newBtn').addEventListener('click', newEntry);
 document.getElementById('clearAllBtn').addEventListener('click', async () => {
-  if (!confirm('저장된 모든 일기를 삭제할까요? 되돌릴 수 없습니다.')) return;
+  if (!confirm('내 일기를 모두 삭제할까요? 되돌릴 수 없습니다.')) return;
   diariesCache = [];
   currentEditId = null;
   renderDiaryList();
+  renderMandala();
   flashStatus('전체 삭제 중…');
-  const ok = await deleteAllDiariesFromCloud();
+  const ok = await deleteAllMyDiaries();
   if (ok) flashStatus('전체 삭제 완료');
 });
 document.getElementById('toggleListBtn').addEventListener('click', () => {
   document.getElementById('diaryList').classList.toggle('show');
 });
-
 document.getElementById('sendBtn').addEventListener('click', () => {
   const v = ta.value.trim();
-  if (!v) {
-    ta.focus();
-    return;
-  }
+  if (!v){ ta.focus(); return; }
   let sum = 0;
   for (const c of v) sum += c.charCodeAt(0);
   const idx = sum % 64;
@@ -1463,66 +2081,155 @@ ta.addEventListener('keydown', (e) => {
     saveCurrent();
   }
 });
-
-/* selectHex 호출 시 lastHexIdx 갱신용 래핑 */
 const _origSelectHex = selectHex;
-selectHex = function(idx){
-  lastHexIdx = idx;
-  _origSelectHex(idx);
-};
+selectHex = function(idx){ lastHexIdx = idx; _origSelectHex(idx); };
+
+/* ── 버전 배지 / 체인지로그 ─── */
+document.getElementById('verBadge').addEventListener('click', () => {
+  document.getElementById('changelogPanel').classList.toggle('show');
+});
+
+/* ── 관리자 툴 버튼 ─────────── */
+document.getElementById('adminReload').addEventListener('click', loadAdmin);
+document.getElementById('adminAllDiaries').addEventListener('click', async () => {
+  adminSelectedNick = null;
+  const all = await fetchAllDiaries();
+  renderAdminUsers(all);
+  renderAdminDiaryList(all);
+});
+document.getElementById('adminExport').addEventListener('click', async () => {
+  const [u, d] = await Promise.all([fetchAllUsers(), fetchAllDiaries()]);
+  const payload = {
+    exportedAt: new Date().toISOString(),
+    version: 'v2.0',
+    users: u.map(x => ({ nick: x.nick, isAdmin: x.isAdmin, createdAt: x.createdAt })),
+    diaries: d,
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `iching_backup_${todayKey()}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+});
 
 /* ──────────────────────────────────────────
-   로그인 게이트 + 접속자 카운트
+   v2 로그인 게이트 — 회원가입 + 비밀번호 로그인
    ──────────────────────────────────────────*/
-const USER_KEY = 'iching_user_v1';
-const VISIT_TOTAL_KEY = 'iching_visit_total_v1';
-const VISIT_BY_DATE_KEY = 'iching_visit_by_date_v1';
-const VISIT_LAST_DATE_KEY = 'iching_visit_last_date_v1';
+const VISIT_TOTAL_KEY = 'iching_visit_total_v2';
+const VISIT_BY_DATE_KEY = 'iching_visit_by_date_v2';
 
 const loginGate = document.getElementById('loginGate');
 const appWrap = document.getElementById('appWrap');
 const loginNick = document.getElementById('loginNick');
+const loginPw = document.getElementById('loginPw');
+const loginPw2 = document.getElementById('loginPw2');
 const loginBtn = document.getElementById('loginBtn');
 const loginErr = document.getElementById('loginErr');
+const tabSignin = document.getElementById('tabSignin');
+const tabSignup = document.getElementById('tabSignup');
+let loginMode = 'signin';
 
-function showApp(nick){
-  document.getElementById('welcomeNick').textContent = nick;
-  loginGate.classList.add('hide');
-  appWrap.style.display = 'block';
-  bumpVisitCount();
-  renderShakeBoot();
+function setLoginMode(m){
+  loginMode = m;
+  tabSignin.classList.toggle('active', m === 'signin');
+  tabSignup.classList.toggle('active', m === 'signup');
+  loginPw2.classList.toggle('hidden', m === 'signin');
+  loginBtn.textContent = m === 'signin' ? '入 · 로그인' : '入 · 가입 후 입장';
+  loginErr.textContent = '';
 }
-function tryLogin(){
-  const v = (loginNick.value || '').trim();
-  if (v.length < 2){
-    loginErr.textContent = '닉네임은 최소 2자 이상이어야 합니다.';
+tabSignin.addEventListener('click', () => setLoginMode('signin'));
+tabSignup.addEventListener('click', () => setLoginMode('signup'));
+
+async function tryLogin(){
+  const nick = (loginNick.value || '').trim();
+  const pw = loginPw.value || '';
+  const pw2 = loginPw2.value || '';
+  if (!isValidNick(nick)){
+    loginErr.textContent = '닉네임 2~12자 (한글/영문/숫자/_-).';
     loginNick.focus();
     return;
   }
-  localStorage.setItem(USER_KEY, JSON.stringify({ nick: v, loginAt: new Date().toISOString() }));
-  showApp(v);
-}
-function doLogout(){
-  if (!confirm('로그아웃 하시겠습니까? (저장된 일기는 그대로 남아 있어요)')) return;
-  localStorage.removeItem(USER_KEY);
-  location.reload();
+  if (pw.length < 4){
+    loginErr.textContent = '비밀번호는 4자 이상이어야 합니다.';
+    loginPw.focus();
+    return;
+  }
+  loginErr.textContent = '연결 중…';
+
+  const existing = await fetchUser(nick);
+  if (loginMode === 'signup'){
+    if (existing){
+      loginErr.textContent = '이미 존재하는 닉네임입니다. 로그인 탭을 이용하세요.';
+      return;
+    }
+    if (pw !== pw2){
+      loginErr.textContent = '비밀번호 확인이 일치하지 않습니다.';
+      loginPw2.focus();
+      return;
+    }
+    const isAdmin = (nick.toLowerCase() === 'admin');
+    const salt = randSalt();
+    const passHash = await hashPassword(pw, salt);
+    const u = { nick, salt, passHash, isAdmin, createdAt: new Date().toISOString() };
+    const ok = await upsertUser(u);
+    if (!ok){ loginErr.textContent = '가입 실패 — 잠시 후 다시 시도하세요.'; return; }
+    session = { nick, isAdmin };
+    localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+    await enterApp();
+  } else {
+    if (!existing){
+      loginErr.textContent = (nick.toLowerCase() === 'admin')
+        ? "관리자 계정이 아직 없습니다. '가입하기'로 처음 만들어주세요."
+        : '가입되지 않은 닉네임입니다. 가입하기 탭을 이용하세요.';
+      return;
+    }
+    const h = await hashPassword(pw, existing.salt);
+    if (h !== existing.passHash){
+      loginErr.textContent = '비밀번호가 일치하지 않습니다.';
+      return;
+    }
+    session = { nick: existing.nick, isAdmin: !!existing.isAdmin };
+    localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+    await enterApp();
+  }
 }
 loginBtn.addEventListener('click', tryLogin);
-loginNick.addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
-document.getElementById('logoutBtn').addEventListener('click', doLogout);
+[loginNick, loginPw, loginPw2].forEach(el => {
+  el.addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
+});
+document.getElementById('logoutBtn').addEventListener('click', () => {
+  if (!confirm('로그아웃 하시겠습니까? (일기는 안전하게 남아 있어요)')) return;
+  localStorage.removeItem(SESSION_KEY);
+  location.reload();
+});
+
+async function enterApp(){
+  loginGate.classList.add('hide');
+  appWrap.style.display = 'block';
+  document.getElementById('welcomeNick').textContent = session.nick;
+  document.getElementById('adminMark').innerHTML =
+    session.isAdmin ? ' <span style="color:var(--accent);font-size:10px;letter-spacing:.15em;">· ADMIN</span>' : '';
+  bumpVisitCount();
+  renderShakeBoot();
+  if (session.isAdmin){
+    document.getElementById('adminPanel').style.display = 'block';
+    await migrateLegacyToAdminIfNeeded();
+    await loadAdmin();
+  }
+  diariesCache = await fetchDiariesForUser(session.nick);
+  renderDiaryList();
+  renderMandala();
+}
 
 function bumpVisitCount(){
   const total = (parseInt(localStorage.getItem(VISIT_TOTAL_KEY) || '0', 10) || 0) + 1;
   localStorage.setItem(VISIT_TOTAL_KEY, String(total));
-
-  const tk = dateKey(new Date());
+  const tk = todayKey();
   let byDate = {};
-  try { byDate = JSON.parse(localStorage.getItem(VISIT_BY_DATE_KEY) || '{}'); }
-  catch(e){ byDate = {}; }
+  try { byDate = JSON.parse(localStorage.getItem(VISIT_BY_DATE_KEY) || '{}'); } catch { byDate = {}; }
   byDate[tk] = (byDate[tk] || 0) + 1;
   localStorage.setItem(VISIT_BY_DATE_KEY, JSON.stringify(byDate));
-  localStorage.setItem(VISIT_LAST_DATE_KEY, tk);
-
   document.getElementById('visitCount').textContent = total;
   document.getElementById('visitToday').textContent = byDate[tk];
 }
@@ -1610,7 +2317,7 @@ function renderShakeBoot(){
 }
 
 /* ──────────────────────────────────────────
-   초기 로드 — 로그인 상태 체크 후 부팅
+   초기 로드
    ──────────────────────────────────────────*/
 (async function init(){
   const draft = localStorage.getItem(DRAFT_KEY);
@@ -1621,25 +2328,16 @@ function renderShakeBoot(){
     autoSize();
   }
   updateMeta();
-  renderDiaryList();
+  setLoginMode('signin');
 
-  // 로그인 게이트 처리
   let saved = null;
-  try { saved = JSON.parse(localStorage.getItem(USER_KEY) || 'null'); } catch(e){ saved = null; }
+  try { saved = JSON.parse(localStorage.getItem(SESSION_KEY) || 'null'); } catch { saved = null; }
   if (saved && saved.nick){
-    showApp(saved.nick);
+    session = saved;
+    try { await enterApp(); }
+    catch(e){ console.error('[init] enterApp failed', e); flashStatus('연결 실패 — 새로고침 해주세요'); }
   } else {
     loginNick.focus();
-  }
-
-  // Supabase는 입장과 별개로 백그라운드 로드
-  try {
-    await migrateLocalToCloudIfNeeded();
-    diariesCache = await fetchDiariesFromCloud();
-    renderDiaryList();
-  } catch(e){
-    console.error('[supabase] init failed', e);
-    flashStatus('Supabase 연결 실패 — 콘솔 확인');
   }
 })();
 </script>
