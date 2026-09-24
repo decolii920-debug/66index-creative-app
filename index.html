@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>오늘의 64괘 — 정감록·예수제자의 길 · v2.1</title>
+<title>오늘의 64괘 — 정감록·예수제자의 길 · v2.2</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   :root{
@@ -145,15 +145,18 @@
   .diary-item{
     padding: 12px 14px;
     border-bottom: 1px solid var(--border);
-    cursor: pointer;
     transition: background .15s ease;
+    display: block;
+  }
+  .diary-item:last-child{ border-bottom: 0; }
+  .diary-item:hover{ background: var(--bg-soft); }
+  .diary-item .row-top{
     display: grid;
     grid-template-columns: 1fr auto;
     gap: 10px;
     align-items: start;
+    cursor: pointer;
   }
-  .diary-item:last-child{ border-bottom: 0; }
-  .diary-item:hover{ background: var(--bg-soft); }
   .diary-item .body{
     font-size: 13px; color: var(--text);
     overflow: hidden; text-overflow: ellipsis;
@@ -177,6 +180,81 @@
     padding: 2px 6px;
   }
   .diary-item .del:hover{ color: var(--accent); }
+
+  /* ── 좋아요 / 댓글 ─────────────────── */
+  .diary-actions{
+    display:flex; gap: 8px; margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--border-soft);
+    flex-wrap: wrap;
+  }
+  .diary-actions .act{
+    background: transparent; border: 1px solid var(--border-soft);
+    color: var(--text-dim); padding: 4px 10px; border-radius: 999px;
+    font-size: 11px; cursor: pointer; font-family: inherit;
+    transition: all .15s ease;
+    display:inline-flex; align-items:center; gap: 4px; letter-spacing: .04em;
+  }
+  .diary-actions .act:hover{ color: var(--accent); border-color: var(--accent); }
+  .diary-actions .act.liked{
+    background: rgba(217,119,87,0.14);
+    color: var(--accent-soft);
+    border-color: var(--accent);
+  }
+  .diary-actions .act .cnt{ color: var(--gold); }
+  .comment-thread{
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    display: none;
+  }
+  .comment-thread.show{ display: block; }
+  .comment-empty{
+    color: var(--muted); font-size: 11px; text-align: center;
+    padding: 4px 0 8px;
+  }
+  .comment-item{
+    padding: 6px 0;
+    border-bottom: 1px dashed var(--border-soft);
+    font-size: 12px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 6px;
+    align-items: start;
+  }
+  .comment-item:last-of-type{ border-bottom: 0; }
+  .comment-item .meta-line{
+    font-size: 10px; letter-spacing: .05em;
+    color: var(--muted); margin-bottom: 2px;
+  }
+  .comment-item .meta-line .who{ color: var(--gold); }
+  .comment-item .meta-line .when{ margin-left: 6px; }
+  .comment-item .body{ color: var(--text); line-height: 1.55; word-break: break-word; }
+  .comment-item .cdel{
+    background: transparent; border: 0; color: var(--muted);
+    font-size: 10px; cursor: pointer; font-family: inherit;
+    padding: 2px 6px;
+  }
+  .comment-item .cdel:hover{ color: var(--accent); }
+  .comment-input{
+    display:flex; gap: 6px; margin-top: 10px;
+  }
+  .comment-input input{
+    flex: 1; background: var(--panel); border: 1px solid var(--border);
+    color: var(--text); border-radius: 8px; padding: 7px 10px;
+    font-family: inherit; font-size: 12px; outline: 0;
+    transition: border-color .15s ease;
+  }
+  .comment-input input:focus{ border-color: var(--accent); }
+  .comment-input button{
+    background: var(--accent); color: #fff; border: 0; border-radius: 8px;
+    padding: 7px 12px; cursor: pointer; font-family: inherit; font-size: 12px;
+    letter-spacing: .04em;
+  }
+  .comment-input button:hover{ background: #c46748; }
+  .comment-input button:disabled{ opacity: .5; cursor: not-allowed; }
   .toggle-list{
     background: transparent; border: 0; color: var(--text-dim);
     cursor: pointer; font-size: 12px; font-family: inherit;
@@ -697,7 +775,7 @@
 <div class="login-gate" id="loginGate">
   <div class="login-box">
     <div class="login-logo">六十四卦</div>
-    <div class="login-title">오늘의 64괘 — 입문 · v2.1</div>
+    <div class="login-title">오늘의 64괘 — 입문 · v2.2</div>
     <div class="login-sub">
       각자의 이름과 비밀번호로 안전하게 입장하세요.<br/>
       일기와 만다라 궤적은 오직 나만 볼 수 있습니다.
@@ -720,7 +798,7 @@
 <div class="wrap" id="appWrap" style="display:none;">
 
   <header>
-    <div class="ttl">오늘의 64괘 — 정감록·예수제자의 길<span class="ver-badge" id="verBadge" title="업데이트 내역 보기">v2.1</span></div>
+    <div class="ttl">오늘의 64괘 — 정감록·예수제자의 길<span class="ver-badge" id="verBadge" title="업데이트 내역 보기">v2.2</span></div>
     <div class="sub">동서 융합 일진 · 주역·노자·장자로 읽는 세상과 마음 · 개인 만다라 궤적</div>
     <div class="date" id="todayDate"></div>
     <div class="welcome-bar">
@@ -734,6 +812,7 @@
     <div class="changelog-panel" id="changelogPanel">
       <h4>업데이트 내역</h4>
       <ul>
+        <li><span class="ver">v2.2</span> — 저장된 일기에 좋아요·댓글. 스스로 되뇌고 발자국을 이어붙이는 성찰 장치</li>
         <li><span class="ver">v2.1</span> — 노자(도덕경)·장자(소요유) 항목 추가. 각 괘마다 두 성인의 결로 오늘을 풀이</li>
         <li><span class="ver">v2.0</span> — 비밀번호 로그인·회원가입, 개인별 일기 격리, 만다라 궤적 시각화, 관리자 대시보드</li>
         <li><span class="ver">v1.2</span> — 로그인 게이트·방문자 카운터·흔들기 일진괘·날짜 시드 정세</li>
@@ -1593,6 +1672,9 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 let session = null;            // { nick, isAdmin }
 let users = [];                // admin 시점 사용자 목록
 let diariesCache = [];         // 현재 사용자의 일기
+let likesCache = {};           // diaryId -> [likerNick,...]
+let commentsCache = {};        // diaryId -> [{id,author,body,ts}]
+let openCommentThreads = new Set(); // diaryId 중 열려 있는 댓글창
 let currentEditId = null;
 let lastHexIdx = null;
 let adminSelectedNick = null;
@@ -1729,6 +1811,89 @@ async function deleteAllMyDiaries(){
   if (!session) return false;
   const { error } = await sb.from(TABLE_NAME).delete().like('id', `dia:${session.nick}:%`);
   if (error){ console.error('[dia] del all', error); return false; }
+  await sb.from(TABLE_NAME).delete().like('id', `like:dia:${session.nick}:%`);
+  await sb.from(TABLE_NAME).delete().like('id', `cmt:dia:${session.nick}:%`);
+  return true;
+}
+
+/* ── 좋아요 / 댓글 액세스 ────────
+   like id: `like:<diaryId>|<liker>`   (`|` 로 diaryId·유저 구분)
+   cmt  id: `cmt:<diaryId>|<ts>_<rand>`
+   text 필드는 JSON 페이로드
+   ───────────────────────────── */
+function likeRowId(diaryId, liker){ return `like:${diaryId}|${liker}`; }
+
+async function fetchInteractionsForOwner(ownerNick){
+  const [{ data: likeRows, error: e1 },
+         { data: cmtRows,  error: e2 }] = await Promise.all([
+    sb.from(TABLE_NAME).select('*').like('id', `like:dia:${ownerNick}:%`),
+    sb.from(TABLE_NAME).select('*').like('id', `cmt:dia:${ownerNick}:%`),
+  ]);
+  if (e1) console.error('[like] fetch', e1);
+  if (e2) console.error('[cmt] fetch', e2);
+  const likes = {};      // diaryId -> [likerNick]
+  const comments = {};   // diaryId -> [{id, author, body, ts}]
+  for (const r of (likeRows || [])){
+    try {
+      const p = JSON.parse(r.text);
+      if (p && p.kind === 'like' && p.diaryId){
+        (likes[p.diaryId] ||= []).push(p.liker);
+      }
+    } catch {}
+  }
+  for (const r of (cmtRows || [])){
+    try {
+      const p = JSON.parse(r.text);
+      if (p && p.kind === 'comment' && p.diaryId){
+        (comments[p.diaryId] ||= []).push({
+          id: r.id, author: p.author, body: p.body,
+          ts: p.ts || r.created_at, createdAt: r.created_at,
+        });
+      }
+    } catch {}
+  }
+  for (const k of Object.keys(comments)){
+    comments[k].sort((a,b) => new Date(a.createdAt) - new Date(b.createdAt));
+  }
+  return { likes, comments };
+}
+
+async function toggleLike(diaryId){
+  if (!session) return null;
+  const liker = session.nick;
+  const id = likeRowId(diaryId, liker);
+  const { data: existing } = await sb.from(TABLE_NAME).select('id').eq('id', id).maybeSingle();
+  const now = new Date().toISOString();
+  if (existing){
+    const { error } = await sb.from(TABLE_NAME).delete().eq('id', id);
+    if (error){ console.error('[like] del', error); return null; }
+    return false;
+  }
+  const { error } = await sb.from(TABLE_NAME).upsert({
+    id, text: JSON.stringify({ kind:'like', diaryId, liker, ts: now }),
+    hex: null, created_at: now, updated_at: now,
+  });
+  if (error){ console.error('[like] add', error); return null; }
+  return true;
+}
+
+async function addComment(diaryId, body){
+  if (!session) return null;
+  const now = new Date().toISOString();
+  const rand = Math.random().toString(36).slice(2, 8);
+  const id = `cmt:${diaryId}|${Date.now()}_${rand}`;
+  const payload = { kind:'comment', diaryId, author: session.nick, body, ts: now };
+  const { error } = await sb.from(TABLE_NAME).upsert({
+    id, text: JSON.stringify(payload),
+    hex: null, created_at: now, updated_at: now,
+  });
+  if (error){ console.error('[cmt] add', error); return null; }
+  return { id, author: session.nick, body, ts: now, createdAt: now };
+}
+
+async function deleteComment(id){
+  const { error } = await sb.from(TABLE_NAME).delete().eq('id', id);
+  if (error){ console.error('[cmt] del', error); return false; }
   return true;
 }
 
@@ -1833,6 +1998,9 @@ async function deleteEntry(id, e){
   if (e) e.stopPropagation();
   if (!confirm('이 일기를 삭제할까요?')) return;
   diariesCache = diariesCache.filter(d => d.id !== id);
+  delete likesCache[id];
+  delete commentsCache[id];
+  openCommentThreads.delete(id);
   if (currentEditId === id){
     currentEditId = null;
     ta.value = '';
@@ -1842,8 +2010,93 @@ async function deleteEntry(id, e){
   renderDiaryList();
   renderMandala();
   flashStatus('삭제 중…');
+  await sb.from(TABLE_NAME).delete().like('id', `like:${id}|%`);
+  await sb.from(TABLE_NAME).delete().like('id', `cmt:${id}|%`);
   const ok = await deleteDiary(id);
   if (ok) flashStatus('삭제됨');
+}
+
+async function refreshInteractions(){
+  if (!session) return;
+  const { likes, comments } = await fetchInteractionsForOwner(session.nick);
+  likesCache = likes;
+  commentsCache = comments;
+}
+
+function renderCommentThread(diaryId){
+  const box = document.querySelector(`.comment-thread[data-diary="${diaryId}"]`);
+  if (!box) return;
+  const list = commentsCache[diaryId] || [];
+  const listHtml = list.length
+    ? list.map(c => `
+        <div class="comment-item" data-cid="${c.id}">
+          <div>
+            <div class="meta-line">
+              <span class="who">${escapeHtml(c.author)}</span>
+              <span class="when">${fmtDate(c.createdAt || c.ts)}</span>
+            </div>
+            <div class="body">${escapeHtml(c.body)}</div>
+          </div>
+          ${(c.author === session.nick || session.isAdmin)
+            ? `<button class="cdel" data-cid="${c.id}">삭제</button>`
+            : '<span></span>'}
+        </div>`).join('')
+    : '<div class="comment-empty">아직 댓글이 없습니다.</div>';
+  box.innerHTML = `
+    ${listHtml}
+    <div class="comment-input">
+      <input type="text" placeholder="댓글을 남겨보세요…" maxlength="500" data-diary-input="${diaryId}" />
+      <button data-post="${diaryId}">쓰기</button>
+    </div>
+  `;
+  const inp = box.querySelector(`[data-diary-input="${diaryId}"]`);
+  const btn = box.querySelector(`[data-post="${diaryId}"]`);
+  const post = async () => {
+    const body = (inp.value || '').trim();
+    if (!body) { inp.focus(); return; }
+    btn.disabled = true;
+    const added = await addComment(diaryId, body);
+    btn.disabled = false;
+    if (!added){ flashStatus('댓글 저장 실패'); return; }
+    (commentsCache[diaryId] ||= []).push(added);
+    inp.value = '';
+    renderCommentThread(diaryId);
+    updateActionCounts(diaryId);
+  };
+  btn.addEventListener('click', post);
+  inp.addEventListener('keydown', e => {
+    if (e.key === 'Enter'){ e.preventDefault(); post(); }
+  });
+  box.querySelectorAll('.cdel').forEach(b => {
+    b.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const cid = b.getAttribute('data-cid');
+      if (!confirm('이 댓글을 삭제할까요?')) return;
+      const ok = await deleteComment(cid);
+      if (!ok){ flashStatus('삭제 실패'); return; }
+      commentsCache[diaryId] = (commentsCache[diaryId] || []).filter(c => c.id !== cid);
+      renderCommentThread(diaryId);
+      updateActionCounts(diaryId);
+    });
+  });
+}
+
+function updateActionCounts(diaryId){
+  const row = document.querySelector(`.diary-item[data-id="${diaryId}"]`);
+  if (!row) return;
+  const likes = likesCache[diaryId] || [];
+  const cmts = commentsCache[diaryId] || [];
+  const likedByMe = session ? likes.includes(session.nick) : false;
+  const likeBtn = row.querySelector('.act.like');
+  const cmtBtn = row.querySelector('.act.comment');
+  if (likeBtn){
+    likeBtn.classList.toggle('liked', likedByMe);
+    likeBtn.querySelector('.cnt').textContent = likes.length;
+    likeBtn.querySelector('.lbl').textContent = likedByMe ? '좋아요 취소' : '좋아요';
+  }
+  if (cmtBtn){
+    cmtBtn.querySelector('.cnt').textContent = cmts.length;
+  }
 }
 
 function renderDiaryList(){
@@ -1860,19 +2113,66 @@ function renderDiaryList(){
   list.forEach(d => {
     const row = document.createElement('div');
     row.className = 'diary-item';
+    row.setAttribute('data-id', d.id);
     const hexLabel = (typeof d.hex === 'number') ? `${HEX[d.hex][0]} ${HEX[d.hex][1]}` : '';
+    const likes = likesCache[d.id] || [];
+    const cmts = commentsCache[d.id] || [];
+    const likedByMe = session ? likes.includes(session.nick) : false;
+    const threadOpen = openCommentThreads.has(d.id);
     row.innerHTML = `
-      <div>
-        <div class="body">${escapeHtml(d.body)}</div>
+      <div class="row-top">
+        <div>
+          <div class="body">${escapeHtml(d.body)}</div>
+        </div>
+        <div class="right">
+          <div class="date">${fmtDate(d.updatedAt || d.createdAt)}</div>
+          ${hexLabel ? `<div class="hex">${hexLabel}</div>` : ''}
+          <button class="del" data-id="${d.id}">삭제</button>
+        </div>
       </div>
-      <div class="right">
-        <div class="date">${fmtDate(d.updatedAt || d.createdAt)}</div>
-        ${hexLabel ? `<div class="hex">${hexLabel}</div>` : ''}
-        <button class="del" data-id="${d.id}">삭제</button>
+      <div class="diary-actions">
+        <button class="act like${likedByMe ? ' liked' : ''}" data-id="${d.id}">
+          <span>♥</span><span class="lbl">${likedByMe ? '좋아요 취소' : '좋아요'}</span>
+          <span class="cnt">${likes.length}</span>
+        </button>
+        <button class="act comment" data-id="${d.id}">
+          <span>💬</span><span>댓글</span>
+          <span class="cnt">${cmts.length}</span>
+        </button>
       </div>
+      <div class="comment-thread${threadOpen ? ' show' : ''}" data-diary="${d.id}"></div>
     `;
-    row.addEventListener('click', () => loadEntry(d.id));
+    row.querySelector('.row-top').addEventListener('click', () => loadEntry(d.id));
     row.querySelector('.del').addEventListener('click', (e) => deleteEntry(d.id, e));
+    row.querySelector('.act.like').addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const btn = e.currentTarget;
+      btn.disabled = true;
+      const nick = session.nick;
+      const cur = likesCache[d.id] || [];
+      const wasLiked = cur.includes(nick);
+      if (wasLiked) likesCache[d.id] = cur.filter(n => n !== nick);
+      else (likesCache[d.id] ||= []).push(nick);
+      updateActionCounts(d.id);
+      const result = await toggleLike(d.id);
+      btn.disabled = false;
+      if (result === null){
+        if (wasLiked) (likesCache[d.id] ||= []).push(nick);
+        else likesCache[d.id] = (likesCache[d.id] || []).filter(n => n !== nick);
+        updateActionCounts(d.id);
+        flashStatus('처리 실패');
+      }
+    });
+    row.querySelector('.act.comment').addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = openCommentThreads.has(d.id);
+      if (isOpen) openCommentThreads.delete(d.id);
+      else openCommentThreads.add(d.id);
+      const box = row.querySelector(`.comment-thread[data-diary="${d.id}"]`);
+      box.classList.toggle('show', !isOpen);
+      if (!isOpen) renderCommentThread(d.id);
+    });
+    if (threadOpen) renderCommentThread(d.id);
     items.appendChild(row);
   });
 }
@@ -2053,6 +2353,9 @@ document.getElementById('newBtn').addEventListener('click', newEntry);
 document.getElementById('clearAllBtn').addEventListener('click', async () => {
   if (!confirm('내 일기를 모두 삭제할까요? 되돌릴 수 없습니다.')) return;
   diariesCache = [];
+  likesCache = {};
+  commentsCache = {};
+  openCommentThreads.clear();
   currentEditId = null;
   renderDiaryList();
   renderMandala();
@@ -2101,7 +2404,7 @@ document.getElementById('adminExport').addEventListener('click', async () => {
   const [u, d] = await Promise.all([fetchAllUsers(), fetchAllDiaries()]);
   const payload = {
     exportedAt: new Date().toISOString(),
-    version: 'v2.0',
+    version: 'v2.2',
     users: u.map(x => ({ nick: x.nick, isAdmin: x.isAdmin, createdAt: x.createdAt })),
     diaries: d,
   };
@@ -2218,6 +2521,7 @@ async function enterApp(){
     await loadAdmin();
   }
   diariesCache = await fetchDiariesForUser(session.nick);
+  await refreshInteractions();
   renderDiaryList();
   renderMandala();
 }
